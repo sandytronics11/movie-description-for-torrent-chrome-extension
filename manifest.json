@@ -1,0 +1,14 @@
+{
+	"manifest_version": 2,
+    "name": "PirateBayWithFilmweb",
+    "version": "0.0.1",
+    "description": "The Pirate Bay With Filmweb Extension",
+	"web_accessible_resources": ["ajax_loading_small.gif"],
+    "content_scripts": [ {
+      "all_frames": true,
+      "js": ["js/jquery.js", "js/pb.js"],
+      "matches": [
+            "http://thepiratebay.se/*",
+            "http://www.filmweb.pl/*" ]
+      }]
+}
