@@ -1,14 +1,27 @@
 {
 	"manifest_version": 2,
-    "name": "PirateBayWithFilmweb",
-    "version": "0.0.1",
-    "description": "The Pirate Bay With Filmweb Extension",
+    "name": "Torrent With Filmweb Chrome Extension",
+    "version": "0.0.3",
+    "description": "Torrent With Filmweb Chrome Extension",
 	"web_accessible_resources": ["ajax_loading_small.gif"],
+	
+	 "background": {
+    "scripts":  ["background.js"]
+  },
+  
+	"permissions": [
+	    "webRequest",
+	    "webRequestBlocking",
+	    "<all_urls>"
+	],
     "content_scripts": [ {
       "all_frames": true,
-      "js": ["js/jquery.js", "js/pb.js"],
+      "js": ["js/jquery.js", "js/pb.js", "js/misc.js"],
       "matches": [
             "http://thepiratebay.se/*",
-            "http://www.filmweb.pl/*" ]
+            "http://isohunt.com/*",
+            "http://www.filmweb.pl/*",
+            "http://www.imdb.com/*",
+            "http://ia.media-imdb.com/images/**" ]
       }]
 }
