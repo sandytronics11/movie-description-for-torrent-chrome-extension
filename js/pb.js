@@ -1,3 +1,5 @@
+var storage = chrome.storage.local;
+
 function htmlToText(htmlNode) {
 	var res = "";
 	
@@ -93,6 +95,11 @@ function getTheFilmsFromPirate() {
 }
 
 $(document).ready(function() {
+	
+	storage.get('opts', function(result) {
+		console.log("options = "+JSON.stringify(result));
+	});
+	
 	if (is_pirate_bay()) {
 		getTheFilmsFromPirate();
 	} else {

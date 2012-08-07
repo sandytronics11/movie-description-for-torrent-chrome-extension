@@ -6,7 +6,12 @@ chrome.webRequest.onBeforeRequest.addListener(
   {
     urls: [
       "http://clkads.com/*",
+      "http://player.vimeo.com/*",
       "http://isohunt.com/*.php*",
+      "http://www.roulettebotplus.com/*",
+      "http://pl.hornygirlsexposed.com/*",
+      "http://survey-awardscenter.net/*",
+      "http://7.rotator.wigetmedia.com/*"
     ]
   },
   ["blocking"]);
