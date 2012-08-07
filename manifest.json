@@ -6,7 +6,7 @@
 	"web_accessible_resources": ["ajax_loading_small.gif"],
 	
 	"background": {
-    	"scripts":  ["background.js"]
+    	"scripts":  ["js/mystorage.js", "background.js" ]
 	},
   
 	"options_page": "options.html",
@@ -20,7 +20,7 @@
 	
 	"content_scripts": [ {
 		"all_frames": true,
-		"js": ["js/jquery.js", "js/consts.js", "js/pb.js", "js/misc.js"],
+		"js": ["js/jquery.js", "js/mystorage.js", "js/pb.js", "js/misc.js"],
 		"matches": [
 			"http://thepiratebay.se/*",
 			"http://isohunt.com/*",

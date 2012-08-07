@@ -22,7 +22,29 @@ function htmlToText(htmlNode) {
 	return res.trim();
 }
 
+function addEnableDisablePart(opts, anchor, callback, isSelectedNow) {
+	$("<input name='enabletorrplugin' type='checkbox'> Enable Torrent With Filmweb Chrome Extension</input>")
+		.insertBefore(anchor);
+
+	$("input[name='enabletorrplugin']").click(function() {
+		isSelected = $(this).is(':checked');
+		callback(isSelected);
+		updateOptions(opts);
+		window.location.reload();
+	});
+	$("input[name='enabletorrplugin']").attr('checked', isSelectedNow);
+}
+
 function getTheFilmsFromIsoHunt(opts) {
+	
+	addEnableDisablePart(opts, '#serps', function(isSelected) {
+			opts.General.Integrate_with_IsoHunt = isSelected;
+		},
+		opts.General.Integrate_with_IsoHunt);
+	
+	if (!opts.General.Integrate_with_IsoHunt){
+		return;
+	}
 	
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("removing adds");
@@ -32,9 +54,9 @@ function getTheFilmsFromIsoHunt(opts) {
 	}
 	
 	resultSet = $('#serps').find("tbody").children(":first");
-	resultSet.append("<th>Filmweb</th>");
+	resultSet.append("<th id='filmweb_th'>Filmweb</th>");
 	if (opts.Links.Add_links) {
-		resultSet.append("<th>Links</th>");
+		resultSet.append("<th id='links_th'>Links</th>");
 	}
 	
 	$('#serps').find("tbody").children(" .hlRow").each(function(index) {
@@ -95,14 +117,23 @@ function getTheFilmsFromIsoHunt(opts) {
 
 function getTheFilmsFromPirate(opts) {
 	
+	addEnableDisablePart(opts, '#searchResult', function(isSelected) {
+		opts.General.Integrate_with_PirateBay = isSelected;
+	},
+	opts.General.Integrate_with_PirateBay);
+	
+	if (!opts.General.Integrate_with_PirateBay){
+		return;
+	}
+
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("removing adds");
 		$('iframe').remove();
 	}
 	resultSet = $('#tableHead').children(":first");
-	resultSet.append("<th>Filmweb</th>");
+	resultSet.append("<th id='filmweb_th'>Filmweb</th>");
 	if (opts.Links.Add_links) {
-		resultSet.append("<th>Links</th>");
+		resultSet.append("<th id='links_th'>Links</th>");
 	}
 	
 	$('#searchResult').find("tbody").children().each(function(index) {

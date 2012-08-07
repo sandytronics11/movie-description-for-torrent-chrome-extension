@@ -1,12 +1,3 @@
-var storage = chrome.storage.local;
-
-function resetOptions() {
-	storage.remove('opts');
-	storage.set({
-		'opts' : getDefaultOptions()
-	});
-}
-
 function populateOptions(opts) {
 	for ( var categoryName in opts) {
 		category = opts[categoryName];
@@ -44,9 +35,7 @@ function saveOptions() {
 			}
 		}
 	}
-	storage.set({
-		'opts' : opts
-	});
+	updateOptions(opts);
 }
 
 function buildHtml() {

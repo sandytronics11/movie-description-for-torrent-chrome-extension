@@ -1,3 +1,5 @@
+var storage = chrome.storage.local;
+
 function getDefaultOptions() {
 	return {
 		General : {
@@ -5,6 +7,10 @@ function getDefaultOptions() {
 			Integrate_with_PirateBay : true,
 			Integrate_with_IsoHunt : true,
 			Remove_adds_on_PirateBay_and_IsoHunt : true
+		},
+		Filmweb_Integration_Options : {
+			Integrate_with_Filmweb : true,
+			Mark_movies_with_rating_greater_or_equal_than : "7.0"
 		},
 		Movie_description_downloading : {
 			Download_automatically : true,
@@ -23,9 +29,19 @@ function getDefaultOptions() {
 			Add_IMDB_link : true,
 			Use_original_title_as_query_param : true,
 			Use_movie_title_as_query_param : false
-		},
-		Filmweb_Integration_Options : {
-			Mark_movies_with_rating_greater_or_equal_than : "7.0"
 		}
 	};
+}
+
+function resetOptions() {
+	storage.remove('opts');
+	storage.set({
+		'opts' : getDefaultOptions()
+	});
+}
+
+function updateOptions(opts) {
+	storage.set({
+		'opts' : opts
+	});
 }
