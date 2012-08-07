@@ -7,7 +7,7 @@ function getAjaxIcon() {
 	return "<img src=\""+imgUrl+"\" /></td>";
 }
 
-function call_filmweb(filmwebNode, filmTitle) {
+function call_filmweb(opts, filmwebNode, filmTitle) {
 	$.ajax({
 	  url: "http://www.filmweb.pl/search?"+$.param({q: filmTitle }),
 	  success: function(data) {
@@ -22,6 +22,15 @@ function call_filmweb(filmwebNode, filmTitle) {
 					this.href = "http://www.filmweb.pl"+this.href.substring(i);
 				});
 				replaceWith(filmwebNode, firstFilm);
+				
+				try{
+					rating = firstFilm.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
+					if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)){
+						filmwebNode.css('background-color', '#FFFF99');
+					}
+				}catch(err){
+				}
+				
 			}
 	  },
 	  failure:function(data) {
@@ -45,10 +54,10 @@ function get_clean_title_isohunt(originalTitle) {
 	filmNameClean = originalTitle;
 	
 	what = ["\\[.+\\]","UCF.97", "x264","dvdr","xvid", "highres", "DVD Rip", "DVD-R",
-            "xxx", "bollywood", "animation", "Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy","drama",
+            "xxx", "porn", "bollywood", "animation", "Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy","drama",
             "crime","anime","adventure","Sci-Fi", "Tutorial", "Mystery", "Family", "Dance", "War", "western","horror","animation","thriller","westerns","action","pop"];
 	for (i in what) {
-		filmNameClean = filmNameClean.replace(new RegExp("^"+what[i]+"\\ WITOWITO","gi"), "");
+		filmNameClean = filmNameClean.replace(new RegExp("^"+what[i]+DELIMITER,"gi"), "");
 	}
 	
 	filmNameClean = filmNameClean.replace(/WITOWITO/gi, "");
@@ -56,12 +65,22 @@ function get_clean_title_isohunt(originalTitle) {
 	return get_clean_title_pirate(filmNameClean);
 }
 
+function getFirstYear(str) {
+	tmp = str.match(new RegExp("[1-2][0-9][0-9][0-9]","gi"));
+	if (tmp!=null && tmp.length > 0) {
+		return tmp[0];
+	}
+	return null;
+}
+
 function get_clean_title_pirate(originalTitle) {
 	
+	movieYear = null;
 	possibleMovieTitle = false;
 	filmNameClean = originalTitle;
 	year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{][1-2][0-9][0-9][0-9][\\)\\]\\ \\.\\*\\}\\[\\-]","gi"));
 	if (year!=null && year.length > 0) {
+		movieYear = getFirstYear(year[0]);
 		i = filmNameClean.indexOf(year[0]);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
@@ -97,16 +116,36 @@ function get_clean_title_pirate(originalTitle) {
 		return null;
 	}
 	
-	return filmNameClean;
+	return {
+			year : movieYear,
+			title : filmNameClean
+		};
 }
 
-function get_links(param) {
-	return $("<h3></h3>")
-		.append("<a href='https://www.google.pl/search?"+$.param({q: param })+"' target='_blank'>[search]</a>")
-		.append("<br/>")
-		.append("<a href='https://www.google.pl/search?"+$.param({safe:"off", q: param, tbm:"isch"})+"' target='_blank'>[pics]</a>")
-		.append("<br/>")
-		.append("<a href='http://www.filmweb.pl/search?"+$.param({q: param }) +"' target='_blank'>[filmweb]</a>");
+function get_links(optLiks, param) {
+	
+	node = $("<p></p>");
+	if (optLiks.Add_Google_Search_link) {
+		node.append("<a href='https://www.google.pl/search?"+$.param({q: param.title })+"' target='_blank'>[search]</a>");
+		node.append("<br/>");
+	}
+	if (optLiks.Add_Google_Graphic_link) {
+		node.append("<a href='https://www.google.pl/search?"+$.param({safe:"off", q: param.title, tbm:"isch"})+"' target='_blank'>[pics]</a>");
+		node.append("<br/>");
+	}
+	if (optLiks.Add_Filmweb_link) {
+		node.append("<a href='http://www.filmweb.pl/search?"+$.param({q: param.title }) +"' target='_blank'>[filmweb]</a>");
+		node.append("<br/>");
+	}
+	if (optLiks.Add_IMDB_link) {
+		yearInfo = "";
+		if (param.year != null){
+			yearInfo = " ("+param.year+")";
+		}
+		node.append("<a href='http://www.imdb.com/find?"+$.param({q: param.title+yearInfo }) +"&s=tt' target='_blank'>[imdb]</a>");
+		node.append("<br/>");
+	}
+	return node;
 }
 
 

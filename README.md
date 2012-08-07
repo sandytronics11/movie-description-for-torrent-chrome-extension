@@ -5,9 +5,9 @@ Google Chrome Extension for torrent sites with following features:
 
 1. Integrates with PirateBay and IsoHunt
 2. Adds additional column to search results with description and movie rating from FilmWeb (it performs some basic heuristic to extract movie title and perform ajax calls to get the data form filmweb)
-3. Adds additional column to search results with links to:  Google search, Google graphic, Filmweb search for the original torrent title
+3. Marks film with high rating to be better visible to the user 
+3. Adds additional column to search results with links to:  Google search, Google graphic, Filmweb, Imdb search for the original torrent title
 4. Removes adds
-
 
 To install:
 
