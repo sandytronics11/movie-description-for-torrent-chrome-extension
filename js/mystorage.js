@@ -3,7 +3,7 @@ var storage = chrome.storage.local;
 function getDefaultOptions() {
 	return {
 		General : {
-			Enable_this_plugin: true,
+			Enable_this_plugin : true,
 			Integrate_with_PirateBay : true,
 			Integrate_with_IsoHunt : true,
 			Remove_adds_on_PirateBay_and_IsoHunt : true
