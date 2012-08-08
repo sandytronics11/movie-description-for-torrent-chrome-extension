@@ -13,7 +13,8 @@ storage.get('opts', function(result) {
 	  {
 	    urls: [
 	      "http://clkads.com/*",
-	      "http://player.vimeo.com/*"
+	      "http://player.vimeo.com/*",
+		  "http://www.888poker.com/*"
 	    ]
 	  },
 	  ["blocking"]);
@@ -29,7 +30,8 @@ storage.get('opts', function(result) {
 	      "http://www.roulettebotplus.com/*",
 	      "http://pl.hornygirlsexposed.com/*",
 	      "http://survey-awardscenter.net/*",
-	      "http://7.rotator.wigetmedia.com/*"
+	      "http://7.rotator.wigetmedia.com/*",
+		  "http://www.wigetmedia.com/tags/isoww.js"
 	    ]
 	  },
 	  ["blocking"]);

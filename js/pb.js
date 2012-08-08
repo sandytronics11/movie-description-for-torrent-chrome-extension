@@ -8,15 +8,18 @@ function removeDelimiter(title) {
 
 function htmlToText(htmlNode) {
 	var res = "";
-
-	$(htmlNode).contents().each(function(index) {
+	
+	htmlNode.contents().each(function(index, item) {
 		nodeVal = $(this).text().trim();
+		if (item.nodeName=="SPAN"){
+			nodeVal = $(this).attr("title");
+		}
+		
 		if (res==""){
-			res = res + nodeVal + DELIMITER;	
+			res = res + nodeVal + DELIMITER+" ";
 		}else{
 			res = res + nodeVal + " ";	
 		}
-		
 	});
 	
 	return res.trim();
@@ -48,6 +51,8 @@ function getTheFilmsFromIsoHunt(opts) {
 	
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("removing adds");
+		
+		$(document).find("a[href^='http://isohunt.com/a/adclick.php']").remove();
 		$(document).find("script").remove();
 		$(document).find("noscript").remove();
 		$(document).find("iframe").remove();
@@ -70,7 +75,7 @@ function getTheFilmsFromIsoHunt(opts) {
 		}
 		
 			
-		filmwebNode = $("<td class=\"row3\" id=\"filmweb_"+index+"\">"+getAjaxIcon()+"</td>");
+		var filmwebNode = $("<td class=\"row3\" id=\"filmweb_"+index+"\">"+getAjaxIcon()+"</td>");
 		linksNode = $("<td class=\"row3\" id=\"links_"+index+"\"></td>");
 		
 		$(this).append(filmwebNode);
@@ -93,24 +98,28 @@ function getTheFilmsFromIsoHunt(opts) {
 			return;
 		}
 		
-		console.log("parsing row with title: '"+originalTitle+"'");
-		cleanedTitle = get_clean_title_isohunt(originalTitle);
+		console.log("NEW title: '"+originalTitle+"'");
+		var cleanedTitle = get_clean_title_isohunt(originalTitle);
 		
 		if (opts.Links.Add_links) {
 			if (opts.Links.Use_original_title_as_query_param){
 				linksNode.append(get_links(opts.Links, {title:removeDelimiter(originalTitle), year: null}));
 			}
-			if (opts.Links.Use_movie_title_as_query_param && cleanedTitle != null){
+			if (opts.Links.Use_movie_title_as_query_param){
 				linksNode.append(get_links(opts.Links, cleanedTitle));
 			}
 		}
 		
-		if (cleanedTitle == null) {
-			replaceWith(filmwebNode, "not a movie '"+removeDelimiter(originalTitle)+"' ?");
-			return 
+		if (cleanedTitle.not_sure == true) {
+			node = $("<p>Is '"+removeDelimiter(cleanedTitle.title)+"' a movie ?</p>");
+			node.click(function() {
+				replaceWith(filmwebNode, getAjaxIcon());
+				call_filmweb(opts, filmwebNode, cleanedTitle);
+			});
+			replaceWith(filmwebNode, node);
+		} else {
+			call_filmweb(opts, filmwebNode, cleanedTitle);
 		}
-		
-		call_filmweb(opts, filmwebNode, cleanedTitle.title);
 		
 	});
 }
@@ -143,7 +152,7 @@ function getTheFilmsFromPirate(opts) {
 			return;
 		}
 	
-		filmwebNode = $("<td id=\"filmweb_"+index+"\">"+getAjaxIcon()+"</td>");
+		var filmwebNode = $("<td id=\"filmweb_"+index+"\">"+getAjaxIcon()+"</td>");
 		linksNode = $("<td id=\"links_"+index+"\"></td>");
 		
 		$(this).append(filmwebNode);
@@ -152,8 +161,8 @@ function getTheFilmsFromPirate(opts) {
 		}
 		
 		originalTitle = titleNode.children(":first").html();
-		console.log("parsing row with title: '"+originalTitle+"'");
-		cleanedTitle = get_clean_title_pirate(originalTitle);
+		console.log("NEW title: '"+originalTitle+"'");
+		var cleanedTitle = get_clean_title_pirate(originalTitle);
 		
 		if (opts.Links.Add_links) {
 			if (opts.Links.Use_original_title_as_query_param){
@@ -164,12 +173,16 @@ function getTheFilmsFromPirate(opts) {
 			}
 		}
 
-		if (cleanedTitle == null) {
-			replaceWith(filmwebNode, "not a movie '"+removeDelimiter(originalTitle)+"' ?");
-			return 
+		if (cleanedTitle.not_sure == true) {
+			node = $("<p>Is '"+removeDelimiter(cleanedTitle.title)+"' a movie ?</p>");
+			node.click(function() {
+				replaceWith(filmwebNode, getAjaxIcon());
+				call_filmweb(opts, filmwebNode, cleanedTitle);
+			});
+			replaceWith(filmwebNode, node);
+		} else {
+			call_filmweb(opts, filmwebNode, cleanedTitle);
 		}
-		
-		call_filmweb(opts, filmwebNode, cleanedTitle.title);
 		
 	});	
 }

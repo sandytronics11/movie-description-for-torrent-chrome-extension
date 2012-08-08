@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Torrent With Filmweb Chrome Extension",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"description": "Torrent With Filmweb Chrome Extension",
 	"web_accessible_resources": ["ajax_loading_small.gif"],
 	
@@ -20,7 +20,7 @@
 	
 	"content_scripts": [ {
 		"all_frames": true,
-		"js": ["js/jquery.js", "js/mystorage.js", "js/pb.js", "js/misc.js"],
+		"js": ["lib/jquery.min-1.7.2.js", "lib/jquery.ajaxq-0.0.1.js", "js/mystorage.js", "js/movieCache.js", "js/misc.js", "js/pb.js" ],
 		"matches": [
 			"http://thepiratebay.se/*",
 			"http://isohunt.com/*",

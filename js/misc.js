@@ -7,62 +7,85 @@ function getAjaxIcon() {
 	return "<img src=\""+imgUrl+"\" /></td>";
 }
 
-function call_filmweb(opts, filmwebNode, filmTitle) {
-	$.ajax({
-	  url: "http://www.filmweb.pl/search?"+$.param({q: filmTitle }),
-	  success: function(data) {
-		  firstFilm = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");					
-			if (firstFilm.length == 0) {
-				replaceWith(filmwebNode, "Can't find '"+filmTitle+"'.");
-			} else {
-				firstFilm.find("a[href]").each(function() {
-					i = this.href.indexOf("/");
-					i = this.href.indexOf("/",i+1);
-					i = this.href.indexOf("/",i+1);
-					this.href = "http://www.filmweb.pl"+this.href.substring(i);
-				});
-				replaceWith(filmwebNode, firstFilm);
-				
-				try{
-					rating = firstFilm.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-					if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)){
-						filmwebNode.css('background-color', '#FFFF99');
-					}
-				}catch(err){
-				}
-				
-			}
-	  },
-	  failure:function(data) {
-		  replaceWith(filmwebNode, "Can't connect to filmweb");
-	  }
-	});	
-}
-
-function trim(str) {
-	 return str.replace(/^\s+|\s+$/g, "");
-}
-
-function removeAll(from, what) {
-	for (i in what) {
-		from = from.replace(new RegExp(what[i],"gi"), "");
-	}
-	return from;
-}
-
-function get_clean_title_isohunt(originalTitle) {
-	filmNameClean = originalTitle;
-	
-	what = ["\\[.+\\]","UCF.97", "x264","dvdr","xvid", "highres", "DVD Rip", "DVD-R",
-            "xxx", "porn", "bollywood", "animation", "Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy","drama",
-            "crime","anime","adventure","Sci-Fi", "Tutorial", "Mystery", "Family", "Dance", "War", "western","horror","animation","thriller","westerns","action","pop"];
-	for (i in what) {
-		filmNameClean = filmNameClean.replace(new RegExp("^"+what[i]+DELIMITER,"gi"), "");
-	}
-	
-	filmNameClean = filmNameClean.replace(/WITOWITO/gi, "");
+function updateFilmwebSection(opts, filmwebNode, firstFilm, filmTitle) {
+	if (firstFilm.length == 0) {
+		replaceWith(filmwebNode, "Can't find '"+filmTitle+"'.");
+	} else {
+		firstFilm.find("a[href]").each(function() {
+			i = this.href.indexOf("/");
+			i = this.href.indexOf("/",i+1);
+			i = this.href.indexOf("/",i+1);
+			this.href = "http://www.filmweb.pl"+this.href.substring(i);
+		});
+		replaceWith(filmwebNode, firstFilm);
 		
-	return get_clean_title_pirate(filmNameClean);
+		try{
+		
+			rating = firstFilm.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");						
+			if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)){
+				filmwebNode.css('background-color', '#FFFFAA');
+			}
+		}catch(err){
+		}
+		
+	}
+}
+
+function call_filmweb(opts, _filmwebNode, _Movie) {
+
+	var filmwebNode = _filmwebNode;
+	var Movie = _Movie;
+	
+	console.log(" calling FILMWEB for '" + Movie.title+"'");
+
+	firstFilm = getContentForMovie(Movie);
+	if (firstFilm != undefined) {
+		updateFilmwebSection(opts, filmwebNode, $(firstFilm));
+	}else {
+	
+		callOpts = {		
+		  url: "http://www.filmweb.pl/search?"+$.param({q: Movie.title }),
+		  success: function(data) {
+				firstFilm = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
+				if (firstFilm.length >0) {
+					addMovie(Movie, firstFilm.html());
+				}
+				updateFilmwebSection(opts, filmwebNode, firstFilm, Movie.title);
+				
+		  },
+		  failure: function(data) {
+			  replaceWith(filmwebNode, "Can't connect to Filmweb");
+		  }
+		};
+	
+		if (opts.Filmweb_Integration_Options.Download_one_movie_descryption_at_a_time){
+			$.ajaxq("filmWebQueue", callOpts);
+		}else{
+			$.ajax(callOpts);	
+		}
+	}
+}
+
+function removeDoubleWhitespaces(str){
+	return str.replace(/ +(?= )/g,'');
+}
+
+function normalize(str){
+	return removeDoubleWhitespaces(str).trim();
+}
+
+function removeBrackets(str, leadingOnly) {
+	brackets = ["\\[.+?\\]","\\(.+?\\)","\\{.+?\\}", "\\*\\*.+?\\*\\*"];
+	for (i in brackets) {
+		regexpr = null;
+		if (leadingOnly) {
+			regexpr = new RegExp("^"+brackets[i],"gi");
+		}else{
+			regexpr = new RegExp(brackets[i],"gi");
+		}
+		str = str.replace(regexpr, "");
+	}
+	return str.trim();
 }
 
 function getFirstYear(str) {
@@ -73,34 +96,67 @@ function getFirstYear(str) {
 	return null;
 }
 
+function get_clean_title_isohunt(movieTitle) {
+	movieTitle = removeBrackets(movieTitle, true);
+	
+	what = ["HD RIPS","UCF.97", "x264","dvdr","xvid", "highres", "DVD Rip", "DVD-R",
+            "xxx", "porn", "bollywood", "animation", "Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama",
+            "crime","anime","adventure","Sci\\-Fi", "Tutorial", "Mystery", "Family", "Dance", "War", "western","horror","animation",
+            "thriller","westerns","action","pop"];
+	
+	for (i in what) {
+		movieTitle = movieTitle.replace(new RegExp("^"+what[i]+DELIMITER,"gi"), "");
+	}
+	
+	movieTitle = normalize(removeDelimiter(movieTitle));
+	
+	console.log(" after removing prefix '"+movieTitle+"'");
+		
+	return get_clean_title_pirate(movieTitle);
+}
+
 function get_clean_title_pirate(originalTitle) {
 	
 	movieYear = null;
 	possibleMovieTitle = false;
-	filmNameClean = originalTitle;
-	year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{][1-2][0-9][0-9][0-9][\\)\\]\\ \\.\\*\\}\\[\\-]","gi"));
+	filmNameClean = removeBrackets(originalTitle, true);
+	year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{\\_][1-2][0-9][0-9][0-9]([\\)\\]\\ \\.\\,\\*\\}\\[\\-\\_\\(]|$)","gi"));
 	if (year!=null && year.length > 0) {
 		movieYear = getFirstYear(year[0]);
 		i = filmNameClean.indexOf(year[0]);
+		console.log(" found year "+year[0]+" at pos "+i);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
 	}
 
-	filmNameClean = filmNameClean.replace(new RegExp("\\[.+\\]","gi"), "");
-	filmNameClean = filmNameClean.replace(new RegExp("\\(.+\\)","gi"), "");
+	filmNameClean = normalize(filmNameClean);
+	console.log(" after removing everything until first date '"+filmNameClean+"'");
 	
-	special = filmNameClean.match(new RegExp("KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|UNRATED|720p", "gi"));
+	filmNameClean = removeBrackets(filmNameClean, false);
+	
+	console.log(" after removing everything everything inside the brackets '"+filmNameClean+"'");
+	//
+	special = filmNameClean.match(new RegExp("\\.mpg|\\.avi|TOPSIDER|KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|AC3|UNRATED|720p", "gi"));
 	if (special!=null && special.length > 0) {
 		i = filmNameClean.indexOf(special[0]);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
 	}
-
+	filmNameClean = normalize(filmNameClean);
+	console.log(" after choping on special endings '"+filmNameClean+"'");
+	//
+	filmNameClean = filmNameClean.replace(new RegExp("[\\[\\]\\(\\)\\.\\-\\=\\_]", "gi"), " ");
+	filmNameClean = normalize(filmNameClean);
+	console.log(" after cleaning strange characters '"+filmNameClean+"'");
+	filmNameClean = normalize(filmNameClean);
+	
 	if (!possibleMovieTitle) {
-		return null;
+		console.log("==> don't know if is a movie");
+		return {
+			not_sure : true,
+			title : filmNameClean
+		};
 	}
-
-	filmNameClean = filmNameClean.replace(new RegExp("[\\[\\]\\(\\)\\.\\-\\=]", "gi"), " ");
 
 	ttr = [
 		"XDM", "AAC", "HD", "CAM", "DVDScrRip", "Dvdscr", "Rip" , "1CD", "2CD", "MP3", "x264 5.1", "x264",
@@ -109,8 +165,10 @@ function get_clean_title_pirate(originalTitle) {
 	for (i in ttr) {
 		filmNameClean = filmNameClean.replace(new RegExp(ttr[i],"gi"), "");
 	}
-
-	filmNameClean = trim(filmNameClean);
+	
+	filmNameClean = normalize(filmNameClean);
+	
+	console.log(" after removing buzzwords & trim '"+filmNameClean+"' of year "+movieYear);
 	
 	if (filmNameClean=="") {
 		return null;

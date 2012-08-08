@@ -10,16 +10,12 @@ function getDefaultOptions() {
 		},
 		Filmweb_Integration_Options : {
 			Integrate_with_Filmweb : true,
+			Download_one_movie_descryption_at_a_time : true,
 			Mark_movies_with_rating_greater_or_equal_than : "7.0"
 		},
-		Movie_description_downloading : {
-			Download_automatically : true,
-			One_at_a_time : false,
-			Add_buttons_to_download_manually_on_fail : true
-		},
-		Cache : {
+		Movie_cache : {
 			Use_cache : true,
-			TTL_in_hours : "48"
+			Expire_after_hours : "48"
 		},
 		Links : {
 			Add_links : true,
@@ -27,8 +23,8 @@ function getDefaultOptions() {
 			Add_Google_Graphic_link : true,
 			Add_Filmweb_link : true,
 			Add_IMDB_link : true,
-			Use_original_title_as_query_param : true,
-			Use_movie_title_as_query_param : false
+			Use_original_title_as_query_param : false,
+			Use_movie_title_as_query_param : true
 		}
 	};
 }
