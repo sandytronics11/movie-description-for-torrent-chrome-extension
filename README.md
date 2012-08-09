@@ -8,6 +8,7 @@ Google Chrome Extension for torrent sites with following features:
 3. Marks film with high rating to be better visible to the user 
 3. Adds additional column to search results with links to:  Google search, Google graphic, Filmweb, Imdb search for the original torrent title
 4. Removes adds
+5. Uses expiring cache
 
 To install:
 

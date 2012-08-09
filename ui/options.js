@@ -73,10 +73,17 @@ $(document).ready(function() {
 	$('#resetOptions').click(function() {
 		resetOptions();
 		reloadOptions();
+		alert("Done");
 	});
 
 	$('#saveOptions').click(function() {
 		saveOptions();
 		reloadOptions();
+		alert("Done");
+	});
+
+	$('#cleanCache').click(function() {
+		cleanCache();
+		alert("Done");
 	});
 });

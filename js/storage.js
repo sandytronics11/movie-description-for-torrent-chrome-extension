@@ -11,11 +11,8 @@ function getDefaultOptions() {
 		Filmweb_Integration_Options : {
 			Integrate_with_Filmweb : true,
 			Download_one_movie_descryption_at_a_time : true,
-			Mark_movies_with_rating_greater_or_equal_than : "7.0"
-		},
-		Movie_cache : {
-			Use_cache : true,
-			Expire_after_hours : "48"
+			Mark_movies_with_rating_greater_or_equal_than : "7.0",
+			Expire_cache_after_hours : "48"
 		},
 		Links : {
 			Add_links : true,

@@ -2,69 +2,30 @@ function replaceWith(node, str) {
 	node.empty().append(str);
 }
 
+function addEnableDisablePart(opts, anchor, callback, isSelectedNow) {
+	switchNode = $("<div><input name='enabletorrplugin' type='checkbox'>Enable Torrent With Filmweb Chrome Extension</input>"
+			+ prepateURLToOptions(" [More...]") + "</div>");
+	switchNode.insertBefore(anchor);
+
+	chbNode = switchNode.find("input[name='enabletorrplugin']");
+	chbNode.click(function() {
+		isSelected = $(this).is(':checked');
+		callback(isSelected);
+		updateOptions(opts);
+		window.location.reload();
+	});
+	chbNode.attr('checked', isSelectedNow);
+
+}
+
+function prepateURLToOptions(title) {
+	href = chrome.extension.getURL("options.html");
+	return "<a href=\"" + href + "\" target=_blank>" + title + "</a>";
+}
+
 function getAjaxIcon() {
 	imgUrl = chrome.extension.getURL("ajax_loading_small.gif");
 	return "<img src=\"" + imgUrl + "\" /></td>";
-}
-
-function updateFilmwebSection(opts, filmwebNode, firstFilm, filmTitle) {
-	if (firstFilm.length == 0) {
-		replaceWith(filmwebNode, "Can't find '" + filmTitle + "'.");
-	} else {
-		firstFilm.find("a[href]").each(function() {
-			i = this.href.indexOf("/");
-			i = this.href.indexOf("/", i + 1);
-			i = this.href.indexOf("/", i + 1);
-			this.href = "http://www.filmweb.pl" + this.href.substring(i);
-		});
-		replaceWith(filmwebNode, firstFilm);
-
-		try {
-			rating = firstFilm.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-			if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)) {
-				filmwebNode.css('background-color', '#FFFFAA');
-			}
-		} catch (err) {
-		}
-
-	}
-}
-
-function callFilmweb(opts, _filmwebNode, _Movie) {
-
-	var filmwebNode = _filmwebNode;
-	var Movie = _Movie;
-
-	console.log(" calling FilmWeb for '" + Movie.title + "'");
-
-	firstFilm = getContentForMovie(Movie);
-	if (firstFilm != undefined) {
-		updateFilmwebSection(opts, filmwebNode, $(firstFilm));
-	} else {
-
-		callOpts = {
-			url : "http://www.filmweb.pl/search?" + $.param({
-				q : Movie.title
-			}),
-			success : function(data) {
-				firstFilm = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
-				if (firstFilm.length > 0) {
-					addMovie(Movie, firstFilm.html());
-				}
-				updateFilmwebSection(opts, filmwebNode, firstFilm, Movie.title);
-
-			},
-			failure : function(data) {
-				replaceWith(filmwebNode, "Can't connect to Filmweb");
-			}
-		};
-
-		if (opts.Filmweb_Integration_Options.Download_one_movie_descryption_at_a_time) {
-			$.ajaxq("filmWebQueue", callOpts);
-		} else {
-			$.ajax(callOpts);
-		}
-	}
 }
 
 function removeDoubleWhitespaces(str) {
@@ -97,25 +58,7 @@ function getFirstYear(str) {
 	return null;
 }
 
-function getCleanTitleIsohunt(movieTitle) {
-	movieTitle = removeBrackets(movieTitle, true);
-
-	what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation",
-			"Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure", "Sci\\-Fi",
-			"Tutorial", "Mystery", "Family", "Dance", "War", "western", "horror", "animation", "thriller", "westerns", "action", "pop" ];
-
-	for (i in what) {
-		movieTitle = movieTitle.replace(new RegExp("^" + what[i] + DELIMITER, "gi"), "");
-	}
-
-	movieTitle = normalize(removeDelimiter(movieTitle));
-
-	console.log(" after removing prefix '" + movieTitle + "'");
-
-	return getCleanTitlePirateBay(movieTitle);
-}
-
-function getCleanTitlePirateBay(originalTitle) {
+function getCleanTitleGeneric(originalTitle) {
 
 	movieYear = null;
 	possibleMovieTitle = false;
@@ -124,7 +67,7 @@ function getCleanTitlePirateBay(originalTitle) {
 	if (year != null && year.length > 0) {
 		movieYear = getFirstYear(year[0]);
 		i = filmNameClean.indexOf(year[0]);
-		console.log(" found year " + year[0] + " at pos " + i);
+		console.log(" found year of the movie " + movieYear);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
 	}
@@ -134,7 +77,7 @@ function getCleanTitlePirateBay(originalTitle) {
 
 	filmNameClean = removeBrackets(filmNameClean, false);
 
-	console.log(" after removing everything everything inside the brackets '" + filmNameClean + "'");
+	console.log(" after removing everything inside brackets '" + filmNameClean + "'");
 	//
 	special = filmNameClean
 			.match(new RegExp("\\.mpg|\\.avi|TOPSIDER|KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|AC3|UNRATED|720p", "gi"));
@@ -144,17 +87,18 @@ function getCleanTitlePirateBay(originalTitle) {
 		possibleMovieTitle = true;
 	}
 	filmNameClean = normalize(filmNameClean);
-	console.log(" after choping on special endings '" + filmNameClean + "'");
+	console.log(" after choping off special endings '" + filmNameClean + "'");
 	//
 	filmNameClean = filmNameClean.replace(new RegExp("[\\[\\]\\(\\)\\.\\-\\=\\_]", "gi"), " ");
 	filmNameClean = normalize(filmNameClean);
-	console.log(" after cleaning strange characters '" + filmNameClean + "'");
+	console.log(" after cleaning nonalphanumeric characters '" + filmNameClean + "'");
 	filmNameClean = normalize(filmNameClean);
 
 	if (!possibleMovieTitle) {
-		console.log("==> don't know if is a movie");
+		console.log("don't know if is a movie");
 		return {
 			not_sure : true,
+			year : movieYear,
 			title : filmNameClean
 		};
 	}
@@ -168,7 +112,7 @@ function getCleanTitlePirateBay(originalTitle) {
 
 	filmNameClean = normalize(filmNameClean);
 
-	console.log(" after removing buzzwords & trim '" + filmNameClean + "' of year " + movieYear);
+	console.log(" final after removing buzzwords '" + filmNameClean+"'");
 
 	if (filmNameClean == "") {
 		return null;
