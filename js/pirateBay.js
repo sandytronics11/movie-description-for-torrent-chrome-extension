@@ -66,7 +66,7 @@ function augmentPirateBay(opts) {
 		}
 
 		if (opts.Integration.Integrate_with_Filmweb) {
-			if (cleanedTitle.not_sure && getFromCache(cleanedTitle) == undefined) {
+			if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(filmwebNode, getAjaxIcon());
@@ -80,7 +80,7 @@ function augmentPirateBay(opts) {
 		}
 
 		if (opts.Integration.Integrate_with_IMDB) {
-			if (cleanedTitle.not_sure && getFromCache(cleanedTitle) == undefined) {
+			if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(imdbNode, getAjaxIcon());

@@ -95,8 +95,9 @@ function extractPossibleData(data) {
 	return contentNode;
 }
 
-function callImdbForMovie(opts, _movieNode, _theUrl) {
+function callImdbForMovie(opts, _movieNode, _movie, _theUrl) {
 
+	var Movie = _movie;
 	var movieNode = _movieNode;
 	var theUrl = _theUrl;
 
@@ -108,6 +109,7 @@ function callImdbForMovie(opts, _movieNode, _theUrl) {
 		success : function(data) {
 			contentNode = $(data).find("#maindetails_center_top").find("#title-overview-widget");
 			contentNode = extractDataFromMoviePage(contentNode);
+			imdbCache.addMovie(Movie, contentNode.html());
 			updateMovieSection(opts, movieNode, contentNode, null);
 		},
 		failure : function(data) {
@@ -151,6 +153,7 @@ function callImdbForAnything(opts, _movieNode, _movie) {
 			} else {
 				contentNode = extractPossibleData(data);				
 			}
+			imdbCache.addMovie(Movie, contentNode.html());
 			updateMovieSection(opts, movieNode, contentNode, Movie);
 		},
 		failure : function(data) {
@@ -169,51 +172,57 @@ function callImdb(opts, _movieNode, _movie) {
 
 	var movieNode = _movieNode;
 	var Movie = _movie;
-
-	params = {
-		title : Movie.title,
-		title_type : "feature,tv_movie"
-	};
-
-	var theUrl = "http://www.imdb.com/search/title?" + $.param(params);
-
-	callOpts = {
-		url : theUrl,
-		beforeSend : function(xhr) {
-			console.log("[IMDB] Call to get (callImdb) " + JSON.stringify(Movie) + " with url=" + theUrl);
-		},
-		success : function(data) {
-			content = $(data).find("#main").find("table").find(".title");
-			if (content.length == 0) {
-				callImdbForAnything(opts, _movieNode, _movie);
-			} else {
-
-				movieUrl = null;
-				content.each(function(index) {
-
-					if (index > 0) {
-						return;
-					}
-					if (Movie.year != null) {
-
-					}
-					yearNode = $(this).find(".year_type");
-					linkNode = $(this).find("a[href^='/title/tt']");
-					year = yearNode.text();
-					movieUrl = "http://www.imdb.com" + linkNode.attr("href");
-				});
-
-				callImdbForMovie(opts, movieNode, movieUrl);
-			}
-		},
-		failure : function(data) {
-			replaceWith(filmwebNode, "Can't connect to IMDB");
-		}
-	};
-
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-		$.ajaxq("imdbQueue", callOpts);
+	
+	cachedContentNode = imdbCache.getFromCache(Movie);
+	if (cachedContentNode != undefined) {
+		updateMovieSection(opts, movieNode, $("<div></div>").append(cachedContentNode), Movie);
 	} else {
-		$.ajax(callOpts);
+
+		params = {
+			title : Movie.title,
+			title_type : "feature,tv_movie"
+		};
+	
+		var theUrl = "http://www.imdb.com/search/title?" + $.param(params);
+	
+		callOpts = {
+			url : theUrl,
+			beforeSend : function(xhr) {
+				console.log("[IMDB] Call to get (callImdb) " + JSON.stringify(Movie) + " with url=" + theUrl);
+			},
+			success : function(data) {
+				content = $(data).find("#main").find("table").find(".title");
+				if (content.length == 0) {
+					callImdbForAnything(opts, _movieNode, _movie);
+				} else {
+	
+					movieUrl = null;
+					content.each(function(index) {
+	
+						if (index > 0) {
+							return;
+						}
+						if (Movie.year != null) {
+							//TODO: 
+						}
+						yearNode = $(this).find(".year_type");
+						linkNode = $(this).find("a[href^='/title/tt']");
+						year = yearNode.text();
+						movieUrl = "http://www.imdb.com" + linkNode.attr("href");
+					});
+	
+					callImdbForMovie(opts, movieNode, Movie, movieUrl);
+				}
+			},
+			failure : function(data) {
+				replaceWith(filmwebNode, "Can't connect to IMDB");
+			}
+		};
+	
+		if (opts.Integration.Download_one_movie_descryption_at_a_time) {
+			$.ajaxq("imdbQueue", callOpts);
+		} else {
+			$.ajax(callOpts);
+		}
 	}
 }

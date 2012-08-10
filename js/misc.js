@@ -27,10 +27,11 @@ function updateMovieSection(opts, movieNode, contentNode, movie) {
 
 		try {
 			rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-			if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)) {
+			if (parseFloat(rating) >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
 				movieNode.css('background-color', '#FFFFAA');
 			}
 		} catch (err) {
+			console.log("[WARN]: while extracting filmweb rating" + err);
 		}
 	}
 }

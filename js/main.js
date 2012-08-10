@@ -11,14 +11,20 @@ $(document).ready(function() {
 		opts = result.opts;
 		if (opts.General.Enable_this_plugin) {
 			if (isPirateBay()) {
-				reloadCache(function() {
-					removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-					augmentPirateBay(opts);
+				filmwebCache.reload(function() {
+					imdbCache.reload(function() {
+						filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+						imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+						augmentPirateBay(opts);
+					});
 				});
 			} else {
-				reloadCache(function() {
-					removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-					augmentIsoHunt(opts);
+				filmwebCache.reload(function() {
+					imdbCache.reload(function() {
+						filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+						imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+						augmentIsoHunt(opts);
+					});
 				});
 			}
 		}

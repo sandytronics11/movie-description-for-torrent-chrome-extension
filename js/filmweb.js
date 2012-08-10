@@ -3,7 +3,7 @@ function callFilmweb(opts, _movieNode, _movie) {
 	var movieNode = _movieNode;
 	var Movie = _movie;
 
-	cachedContentNode = getFromCache(Movie);
+	cachedContentNode = filmwebCache.getFromCache(Movie);
 	if (cachedContentNode != undefined) {
 		updateMovieSection(opts, movieNode, $("<div></div>").append(cachedContentNode), Movie);
 	} else {
@@ -26,11 +26,8 @@ function callFilmweb(opts, _movieNode, _movie) {
 			success : function(data) {
 				contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
 				if (contentNode.length > 0) {
-					console.log("[FilmWeb] Got data for " + JSON.stringify(Movie));
 					makeHrefAbsolute("http://www.filmweb.pl", contentNode);
-					addMovieToCache(Movie, contentNode.html());
-				} else {
-					console.log("[FilmWeb] There is no data for " + JSON.stringify(Movie));
+					filmwebCache.addMovie(Movie, contentNode.html());
 				}
 				updateMovieSection(opts, movieNode, contentNode, Movie);
 			},

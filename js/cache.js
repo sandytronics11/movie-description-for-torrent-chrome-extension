@@ -1,98 +1,115 @@
 var storage = chrome.storage.local;
-var movieCache = undefined;
 
-function cleanCache() {
-	storage.remove('movieCache');
+var filmwebCache = new MovieCache('filmwebCache');
+var imdbCache = new MovieCache('imdbCache');
+
+function MovieCache(cacheName) {
+	this.cacheName = cacheName;
+	this.quietPeriodMs = 3000;
+	this.content = null;
+	this.saveTimer = null;
+	this.saveLastTimestamp = null;
 }
 
-function displayCache() {
-	storage.getBytesInUse('movieCache', function(result) {
-		console.log("[CACHE] Cache size in use: " + Math.round(result / 1024) + "KB out of 5 MB");
+MovieCache.prototype.log = function(msg) {
+	console.log("[" + this.cacheName + "] " + msg);
+};
+
+MovieCache.prototype.clean = function() {
+	this.log("Cleaning cache");
+	storage.remove(this.cacheName);
+};
+
+MovieCache.prototype.display = function() {
+	var _this = this;
+	storage.getBytesInUse(this.cacheName, function(result) {
+		_this.log("Cache size in use: " + Math.round(result / 1024) + "KB out of 5 MB");
 	});
-}
+};
 
-function reloadCache(callBack) {
-	console.log("[CACHE] Loading cache");
-	storage.get('movieCache', function(result) {
-		if (result.movieCache != undefined) {
-			console.log("[CACHE] Cache is not empty");
-			movieCache = result.movieCache;
-			displayCache();
+MovieCache.prototype.reload = function(callBack) {
+	var _this = this;
+	_this.log("Loading cache");
+	storage.get(this.cacheName, function(result) {
+		if (result[_this.cacheName] != undefined) {
+			_this.log("Cache is not empty");
+			_this.content = result[_this.cacheName];
+			_this.display();
 		} else {
-			movieCache = new Object();
-			console.log("[CACHE] The cache is empty");
+			_this.log("The cache is empty");
+			_this.content = {};
 		}
 		callBack();
 	});
-}
+};
 
-var saveCacheTimer = null;
-var saveCacheLastTimestamp = null;
-var quietPeriodMs = 500;
+MovieCache.prototype.saveCacheForReal = function() {
+	this.log("Saving cache for real");
+	var obj = {};
+	obj[this.cacheName] = this.content;
+	storage.set(obj);
+};
 
-function saveCacheForReal() {
-	console.log("[CACHE] Saving cache for real");
-	storage.set({
-		'movieCache' : movieCache
-	});
-}
+MovieCache.prototype.turnOnSaveClock = function() {
+	this.saveCacheLastTimestamp = new Date().getTime();
+	var _this = this;
+	this.saveCacheTimer = setTimeout(function() {
+		_this.saveCacheForReal();
+	}, this.quietPeriodMs);
+};
 
-function turnOnSaveCacheClock() {
-	saveCacheLastTimestamp = new Date().getTime();
-	saveCacheTimer = setTimeout(saveCacheForReal, quietPeriodMs);
-}
-
-function saveCache() {
-	if (saveCacheLastTimestamp == null) {
-		turnOnSaveCacheClock();
+MovieCache.prototype.save = function() {
+	if (this.saveLastTimestamp == null) {
+		this.turnOnSaveClock();
 	} else {
-		if (new Date().getTime() - saveCacheLastTimestamp < quietPeriodMs) {
-			console.log("[CACHE] Not need to update cache yet");
-			clearTimeout(saveCacheTimer);
+		if (new Date().getTime() - this.saveLastTimestamp < this.quietPeriodMs) {
+			this.log("Not need to update cache yet");
+			clearTimeout(this.saveTimer);
 		}
-		turnOnSaveCacheClock();
+		this.turnOnSaveClock();
 	}
-}
+};
 
-function getMovieKey(Movie) {
+MovieCache.prototype.getMovieKey = function(Movie) {
 	return Movie.title + "|" + Movie.year;
-}
+};
 
-function addMovieToCache(Movie, Content) {
-	key = getMovieKey(Movie);
+MovieCache.prototype.addMovie = function(Movie, Content) {
+	key = this.getMovieKey(Movie);
 	ts = new Date().getTime();
-	console.log("[CACHE] Adding movie " + key + " to the cache with timestamp " + ts);
-	movieCache[key] = {
+	this.log("Adding movie " + key + " to the cache with timestamp " + ts);
+
+	this.content[key] = {
 		content : Content,
 		timestamp : ts
 	};
-	saveCache();
-}
+	this.save();
+};
 
-function isTsOlderThanNHours(timestamp, hours) {
+MovieCache.prototype.isTsOlderThanNHours = function(timestamp, hours) {
 	del = new Date().getTime() - timestamp;
 	del = del / 1000; // secs
 	del = del / 1000; // mins
 	del = del / 1000; // hours
 	return del > hours;
-}
+};
 
-function removesMoviesOlderThan(hours) {
-	console.log("[CACHE] Evicting movies from cache older than " + hours + " hours");
-	for ( var movieKey in movieCache) {
-		if (isTsOlderThanNHours(movieCache[movieKey].timestamp, hours)) {
-			console.log("evicting movie " + movieKey + " from the cache");
-			delete movieCache[movieKey];
+MovieCache.prototype.removesMoviesOlderThan = function(hours) {
+	this.log("Evicting movies from cache older than " + hours + " hours");
+	for ( var movieKey in this.content) {
+		if (this.isTsOlderThanNHours(this.content[movieKey].timestamp, hours)) {
+			this.log("evicting movie " + movieKey + " from the cache");
+			delete this.content[movieKey];
 		}
 	}
-}
+};
 
-function getFromCache(Movie) {
-	key = getMovieKey(Movie);
-	cm = movieCache[key];
+MovieCache.prototype.getFromCache = function(Movie) {
+	key = this.getMovieKey(Movie);
+	cm = this.content[key];
 	if (cm == undefined) {
 		return undefined;
 	}
-	console.log("[CACHE] Cache hit for " + key);
+	this.log("Cache hit for " + key);
 	return cm.content;
-}
+};

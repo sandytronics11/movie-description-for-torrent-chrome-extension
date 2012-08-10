@@ -83,7 +83,8 @@ $(document).ready(function() {
 	});
 
 	$('#cleanCache').click(function() {
-		cleanCache();
+		filmwebCache.clean();
+		imdbCache.clean();
 		alert("Done");
 	});
 });
