@@ -1,40 +1,11 @@
-function fixHrefsForFilmwebContent(contentNode) {
-	contentNode.find("a[href]").each(function() {
-		i = this.href.indexOf("/");
-		i = this.href.indexOf("/", i + 1);
-		i = this.href.indexOf("/", i + 1);
-		this.href = "http://www.filmweb.pl" + this.href.substring(i);
-	});
-}
+function callFilmweb(opts, _movieNode, _movie) {
 
-function updateFilmwebSection(opts, filmwebNode, contentNode, movie) {
-	if (contentNode.length == 0) {
-		if (movie.year != undefined && movie.year != null) {
-			replaceWith(filmwebNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
-		} else {
-			replaceWith(filmwebNode, "Can't find '" + movie.title + "'.");
-		}
-	} else {
-		replaceWith(filmwebNode, contentNode);
-
-		try {
-			rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-			if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)) {
-				filmwebNode.css('background-color', '#FFFFAA');
-			}
-		} catch (err) {
-		}
-	}
-}
-
-function callFilmweb(opts, _filmwebNode, _Movie) {
-
-	var filmwebNode = _filmwebNode;
-	var Movie = _Movie;
+	var movieNode = _movieNode;
+	var Movie = _movie;
 
 	cachedContentNode = getFromCache(Movie);
 	if (cachedContentNode != undefined) {
-		updateFilmwebSection(opts, filmwebNode, $("<div></div>").append(cachedContentNode), Movie);
+		updateMovieSection(opts, movieNode, $("<div></div>").append(cachedContentNode), Movie);
 	} else {
 
 		params = {
@@ -45,30 +16,30 @@ function callFilmweb(opts, _filmwebNode, _Movie) {
 			params["endYear"] = Movie.year;
 		}
 
-		var fwUrl = "http://www.filmweb.pl/search/film?" + $.param(params);
+		var theUrl = "http://www.filmweb.pl/search/film?" + $.param(params);
 
 		callOpts = {
-			url : fwUrl,
+			url : theUrl,
 			beforeSend : function(xhr) {
-				console.log("[FilmWeb] Call to get " + JSON.stringify(Movie) + " with url=" + fwUrl);
+				console.log("[FilmWeb] Call to get " + JSON.stringify(Movie) + " with url=" + theUrl);
 			},
 			success : function(data) {
 				contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
 				if (contentNode.length > 0) {
 					console.log("[FilmWeb] Got data for " + JSON.stringify(Movie));
-					fixHrefsForFilmwebContent(contentNode);
+					makeHrefAbsolute("http://www.filmweb.pl", contentNode);
 					addMovieToCache(Movie, contentNode.html());
 				} else {
 					console.log("[FilmWeb] There is no data for " + JSON.stringify(Movie));
 				}
-				updateFilmwebSection(opts, filmwebNode, contentNode, Movie);
+				updateMovieSection(opts, movieNode, contentNode, Movie);
 			},
 			failure : function(data) {
-				replaceWith(filmwebNode, "Can't connect to Filmweb");
+				replaceWith(movieNode, "Can't connect to Filmweb");
 			}
 		};
 
-		if (opts.Filmweb_Integration_Options.Download_one_movie_descryption_at_a_time) {
+		if (opts.Integration.Download_one_movie_descryption_at_a_time) {
 			$.ajaxq("filmWebQueue", callOpts);
 		} else {
 			$.ajax(callOpts);

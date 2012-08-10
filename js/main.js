@@ -12,12 +12,12 @@ $(document).ready(function() {
 		if (opts.General.Enable_this_plugin) {
 			if (isPirateBay()) {
 				reloadCache(function() {
-					removesMoviesOlderThan(opts.Filmweb_Integration_Options.Expire_cache_after_hours);
+					removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
 					augmentPirateBay(opts);
 				});
 			} else {
 				reloadCache(function() {
-					removesMoviesOlderThan(opts.Filmweb_Integration_Options.Expire_cache_after_hours);
+					removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
 					augmentIsoHunt(opts);
 				});
 			}

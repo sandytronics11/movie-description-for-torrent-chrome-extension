@@ -2,6 +2,39 @@ function replaceWith(node, str) {
 	node.empty().append(str);
 }
 
+function removeNewLines(str) {
+	return str.replace(/(\r\n|\n|\r)/gm, "");
+}
+
+function makeHrefAbsolute(prefix, contentNode) {
+	contentNode.find("a[href]").each(function() {
+		i = this.href.indexOf("/");
+		i = this.href.indexOf("/", i + 1);
+		i = this.href.indexOf("/", i + 1);
+		this.href = prefix + this.href.substring(i);
+	});
+}
+
+function updateMovieSection(opts, movieNode, contentNode, movie) {
+	if (contentNode.length == 0) {
+		if (movie.year != undefined && movie.year != null) {
+			replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
+		} else {
+			replaceWith(movieNode, "Can't find '" + movie.title + "'.");
+		}
+	} else {
+		replaceWith(movieNode, contentNode);
+
+		try {
+			rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
+			if (parseFloat(rating) >= parseFloat(opts.Filmweb_Integration_Options.Mark_movies_with_rating_greater_or_equal_than)) {
+				movieNode.css('background-color', '#FFFFAA');
+			}
+		} catch (err) {
+		}
+	}
+}
+
 function addEnableDisablePart(opts, anchor, callback, isSelectedNow) {
 	switchNode = $("<div><input name='enabletorrplugin' type='checkbox'>Enable Torrent With Filmweb Chrome Extension</input>"
 			+ prepateURLToOptions(" [More...]") + "</div>");

@@ -8,8 +8,9 @@ function getDefaultOptions() {
 			Integrate_with_IsoHunt : true,
 			Remove_adds_on_PirateBay_and_IsoHunt : true
 		},
-		Filmweb_Integration_Options : {
+		Integration : {
 			Integrate_with_Filmweb : true,
+			Integrate_with_IMDB : true,
 			Download_one_movie_descryption_at_a_time : true,
 			Mark_movies_with_rating_greater_or_equal_than : "7.0",
 			Expire_cache_after_hours : "48"

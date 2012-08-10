@@ -26,6 +26,7 @@ storage.get('opts', function(result) {
 	  },
 	  {
 	    urls: [
+	      "http://ia.media-imdb.com/images/*",
 	      "http://isohunt.com/*.php*",
 	      "http://www.roulettebotplus.com/*",
 	      "http://pl.hornygirlsexposed.com/*",

@@ -6,10 +6,8 @@ function cleanCache() {
 }
 
 function displayCache() {
-	var done = false;
 	storage.getBytesInUse('movieCache', function(result) {
 		console.log("[CACHE] Cache size in use: " + Math.round(result / 1024) + "KB out of 5 MB");
-		done = true;
 	});
 }
 

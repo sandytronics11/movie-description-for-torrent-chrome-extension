@@ -20,7 +20,7 @@
 	
 	"content_scripts": [ {
 		"all_frames": true,
-		"js": ["lib/jquery.min-1.7.2.js", "lib/jquery.ajaxq-0.0.1.js", "js/storage.js", "js/cache.js", "js/misc.js", "js/filmweb.js", "js/isoHunt.js", "js/pirateBay.js", "js/main.js" ],
+		"js": ["lib/jquery.min-1.7.2.js", "lib/jquery.ajaxq-0.0.1.js", "js/storage.js", "js/cache.js", "js/misc.js", "js/filmweb.js", "js/imdb.js", "js/isoHunt.js", "js/pirateBay.js", "js/main.js" ],
 		"matches": [
 			"http://thepiratebay.se/*",
 			"http://isohunt.com/*",

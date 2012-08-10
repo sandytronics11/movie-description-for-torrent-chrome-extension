@@ -60,8 +60,11 @@ function augmentIsoHunt(opts) {
 	}
 
 	resultSet = $('#serps').find("tbody").children(":first");
-	if (opts.Filmweb_Integration_Options.Integrate_with_Filmweb) {
-		resultSet.append("<th id='filmweb_th'>" + prepateURLToOptions("Filmweb") + "</th>");
+	if (opts.Integration.Integrate_with_Filmweb) {
+		resultSet.append("<th id='filmweb_th'>" + prepateURLToOptions("FilmWeb") + "</th>");
+	}
+	if (opts.Integration.Integrate_with_IMDB) {
+		resultSet.append("<th id='imdb_th'>" + prepateURLToOptions("IMDB") + "</th>");
 	}
 	if (opts.Links.Add_links) {
 		resultSet.append("<th id='links_th'>" + prepateURLToOptions("Links") + "</th>");
@@ -79,10 +82,13 @@ function augmentIsoHunt(opts) {
 		}
 
 		var filmwebNode = $("<td class=\"row3\" id=\"filmweb_" + index + "\">" + getAjaxIcon() + "</td>");
+		var imdbNode = $("<td class=\"row3\" id=\"imdb_" + index + "\">" + getAjaxIcon() + "</td>");
 		var linksNode = $("<td class=\"row3\" id=\"links_" + index + "\"></td>");
-
-		if (opts.Filmweb_Integration_Options.Integrate_with_Filmweb) {
+		if (opts.Integration.Integrate_with_Filmweb) {
 			$(this).append(filmwebNode);
+		}
+		if (opts.Integration.Integrate_with_IMDB) {
+			$(this).append(imdbNode);
 		}
 		if (opts.Links.Add_links) {
 			$(this).append(linksNode);
@@ -122,18 +128,33 @@ function augmentIsoHunt(opts) {
 			}
 		}
 
-		if (opts.Filmweb_Integration_Options.Integrate_with_Filmweb) {
+		if (opts.Integration.Integrate_with_Filmweb) {
 			if (cleanedTitle.not_sure && getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(filmwebNode, getAjaxIcon());
 					callFilmweb(opts, filmwebNode, cleanedTitle);
+
 				});
 				replaceWith(filmwebNode, node);
 			} else {
 				callFilmweb(opts, filmwebNode, cleanedTitle);
 			}
 		}
+
+		if (opts.Integration.Integrate_with_IMDB) {
+			if (cleanedTitle.not_sure && getFromCache(cleanedTitle) == undefined) {
+				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
+				node.click(function() {
+					replaceWith(imdbNode, getAjaxIcon());
+					callImdb(opts, imdbNode, cleanedTitle);
+				});
+				replaceWith(imdbNode, node);
+			} else {
+				callImdb(opts, imdbNode, cleanedTitle);
+			}
+		}
+
 	});
 	console.log("[MAIN] End of scanning");
 }
