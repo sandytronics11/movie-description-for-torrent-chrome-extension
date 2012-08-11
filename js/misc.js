@@ -2,6 +2,19 @@ function replaceWith(node, str) {
 	node.empty().append(str);
 }
 
+function removeOnlyBrackets(str){
+	return str.replace(new RegExp("[\\(\\)]", "gi"), "");
+}
+
+function containsAny(str, patterns) {
+	for (i in patterns) {
+		if (str.indexOf(patterns[i]) >= 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function removeNewLines(str) {
 	return str.replace(/(\r\n|\n|\r)/gm, "");
 }
@@ -15,6 +28,28 @@ function makeHrefAbsolute(prefix, contentNode) {
 	});
 }
 
+function getRatingFromFilmWeb(contentNode) {
+	rating = null;
+	try {
+		rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
+		rating = parseFloat(rating);
+	} catch (err) {
+		console.log("[WARN]: while extracting filmweb rating: " + err);
+	}
+	return rating;
+}
+
+function getRatingFromIMDB(contentNode) {
+	rating = null;
+	try {
+		rating = contentNode.find(" .star-box-details").children(":first").text();
+		rating = parseFloat(rating);
+	} catch (err) {
+		console.log("[WARN]: while extracting imdb rating: " + err);
+	}
+	return rating;
+}
+
 function updateMovieSection(opts, movieNode, contentNode, movie) {
 	if (contentNode.length == 0) {
 		if (movie.year != undefined && movie.year != null) {
@@ -25,14 +60,15 @@ function updateMovieSection(opts, movieNode, contentNode, movie) {
 	} else {
 		replaceWith(movieNode, contentNode);
 
-		try {
-			rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-			if (parseFloat(rating) >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
-				movieNode.css('background-color', '#FFFFAA');
-			}
-		} catch (err) {
-			console.log("[WARN]: while extracting filmweb rating" + err);
+		rating = getRatingFromFilmWeb(contentNode);
+		if (rating == null) {
+			rating = getRatingFromIMDB(contentNode);
 		}
+
+		if (rating >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
+			movieNode.css('background-color', '#FFFFAA');
+		}
+
 	}
 }
 
@@ -146,7 +182,7 @@ function getCleanTitleGeneric(originalTitle) {
 
 	filmNameClean = normalize(filmNameClean);
 
-	console.log(" final after removing buzzwords '" + filmNameClean+"'");
+	console.log(" final after removing buzzwords '" + filmNameClean + "'");
 
 	if (filmNameClean == "") {
 		return null;
