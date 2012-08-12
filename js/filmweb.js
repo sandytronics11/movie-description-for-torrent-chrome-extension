@@ -25,6 +25,11 @@ function callFilmweb(opts, _movieNode, _movie) {
 			},
 			success : function(data) {
 				contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
+				
+				if (!opts.Integration.Display_detailed_informations) {
+					contentNode.find(".searchResultDetails").remove();
+				}
+	
 				if (contentNode.length > 0) {
 					makeHrefAbsolute("http://www.filmweb.pl", contentNode);
 					filmwebCache.addMovie(Movie, contentNode.html());

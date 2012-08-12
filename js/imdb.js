@@ -7,8 +7,8 @@ function removeMetaHtmlAttrs(node, what) {
 	}
 }
 
-function extractDataFromMoviePage(contentNode, movieId) {
-	n = contentNode.children(":first").children(":first").children(":first");
+function extractDataFromMoviePage(opts, n, movieId) {
+	n = contentNode;
 	if (n.length == 0) {
 		return $("<p>Can't extract data - looks like IMDB layout problem :(</p>");
 	}
@@ -21,8 +21,12 @@ function extractDataFromMoviePage(contentNode, movieId) {
 	n.find(".rightcornerlink").remove();
 	n.find(".star-box-rating-widget").remove();
 	n.find(".star-box-giga-star").remove();
-	n.find("clear").remove();
+	n.find(".clear").remove();
 	n.find("p:empty").remove();
+	
+	if (!opts.Integration.Display_detailed_informations) {
+		n.find(".txt-block").remove();
+	}
 
 	n.find("h4").each(function(index) {
 		$(this).replaceWith($("<strong>" + $(this).text() + "</strong>"));
@@ -32,11 +36,11 @@ function extractDataFromMoviePage(contentNode, movieId) {
 	});
 	removeMetaHtmlAttrs(n);
 	makeHrefAbsolute(imdbUrl, n);
-	return $(removeNewLines(n.html()));
+	return $("<div>"+removeNewLines(n.html())+"</div>");
 }
 
 function extractPossibleData(opts, _movieNode, data, movie) {
-	nodeHtml = "<td>";
+	nodeHtml = "<div>";
 	mainNode = $(data).find("#main");
 	mainNode.find(".show-hide").remove();
 	
@@ -48,6 +52,9 @@ function extractPossibleData(opts, _movieNode, data, movie) {
 		}
 		titleTitle = removeOnlyBrackets(titleTitle);
 		titleTitle = titleTitle.replace(/titles/gi, "");
+		titleTitle = titleTitle.replace(new RegExp("Displaying.+?(Results|Result)", "gi"), "");
+		 
+		 
 		titleTitle = titleTitle.trim();
 		wrongSections = [ "Keywords Approx Matches", "Companies Approx Matches", "Names Approx Matches" ];
 		if (containsAny(titleTitle, wrongSections)) {
@@ -77,7 +84,7 @@ function extractPossibleData(opts, _movieNode, data, movie) {
 			
 			year = year + " " +n.find("small").text();
 			
-			wrongTypes = ["VG", "TV series"];
+			wrongTypes = ["TV", "VG", "TV series"];
 			if (containsAny(year, wrongTypes)) {
 				return;
 			}
@@ -95,9 +102,11 @@ function extractPossibleData(opts, _movieNode, data, movie) {
 			nodeHtml = nodeHtml + "<li>" + n.html().trim() + "</li>";
 		});
 			
-		nodeHtml = nodeHtml + "</ul></div>";
+		if (isHeaderAdded) {
+			nodeHtml = nodeHtml + "</ul></div>";
+		}
 	});
-	nodeHtml = nodeHtml + "</td>";
+	nodeHtml = nodeHtml + "</div>";
 	if (nodeHtml.length < 20) {
 		nodeHtml = "";
 	}
@@ -126,8 +135,8 @@ function callImdbForMovie(opts, _movieNode, _movie, _movieId) {
 			console.log("[IMDB] Call to get (callImdbForMovie) movie with url=" + theUrl);
 		},
 		success : function(data) {
-			contentNode = $(data).find("#maindetails_center_top").find("#title-overview-widget");
-			contentNode = extractDataFromMoviePage(contentNode, movieId);
+			contentNode = $(data).find("#overview-top");
+			contentNode = extractDataFromMoviePage(opts, contentNode, movieId);
 			imdbCache.addMovie(Movie, contentNode.html());
 			updateMovieSection(opts, movieNode, contentNode, null);
 		},
@@ -264,9 +273,9 @@ function callImdbForFirstHit(opts, _movieNode, _movie) {
 			console.log("[IMDB] Call to get (callImdbForFirstHit) " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
-			contentNode = $(data).find("#maindetails_center_top").find("#title-overview-widget");
+			contentNode = $(data).find("#overview-top");
 			if (contentNode.length > 0) {
-				contentNode = extractDataFromMoviePage(contentNode);
+				contentNode = extractDataFromMoviePage(opts, contentNode, "TODO");
 				imdbCache.addMovie(Movie, contentNode.html());
 				updateMovieSection(opts, movieNode, contentNode, Movie);
 			} else {

@@ -69,14 +69,20 @@ function augmentIsoHunt(opts) {
 	}
 
 	console.log("[MAIN] Begin of scanning");
+	
+	
+	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
+		$('#serps').find("tbody").children().each(function(index) {
+			$(this).removeAttr("onclick");
+			$(this).removeAttr("onmouseover");
+			$(this).removeAttr("onmouseout");
+		});
+	}
+	
 	$('#serps').find("tbody").children(" .hlRow").each(function(index) {
 
 		if ($(this).find("th").length > 0) {
 			return;
-		}
-
-		if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
-			$(this).removeAttr("onclick");
 		}
 
 		var filmwebNode = $("<td class=\"row3\" id=\"filmweb_" + index + "\">" + getAjaxIcon() + "</td>");
