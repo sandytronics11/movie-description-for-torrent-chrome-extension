@@ -2,6 +2,17 @@ function isPirateBay() {
 	return window.location.hostname.indexOf("pirate") >= 0;
 }
 
+function reloadCacheAndDo(callback) {
+	filmwebCache.reload(function() {
+		imdbCache.reload(function() {
+			filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+			imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+			callback();
+			
+		});
+	});	
+}
+
 $(document).ready(function() {
 
 	chrome.storage.local.get('opts', function(result) {
@@ -10,23 +21,13 @@ $(document).ready(function() {
 		}
 		opts = result.opts;
 		if (opts.General.Enable_this_plugin) {
-			if (isPirateBay()) {
-				filmwebCache.reload(function() {
-					imdbCache.reload(function() {
-						filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-						imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-						augmentPirateBay(opts);
-					});
-				});
-			} else {
-				filmwebCache.reload(function() {
-					imdbCache.reload(function() {
-						filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-						imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-						augmentIsoHunt(opts);
-					});
-				});
-			}
+			reloadCacheAndDo(function() {
+				if (isPirateBay()) {
+					augmentPirateBay(opts);
+				} else {
+					augmentIsoHunt(opts);
+				}
+			});
 		}
 	});
 

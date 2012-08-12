@@ -2,7 +2,7 @@ function replaceWith(node, str) {
 	node.empty().append(str);
 }
 
-function removeOnlyBrackets(str){
+function removeOnlyBrackets(str) {
 	return str.replace(new RegExp("[\\(\\)]", "gi"), "");
 }
 
@@ -72,19 +72,38 @@ function updateMovieSection(opts, movieNode, contentNode, movie) {
 	}
 }
 
-function addEnableDisablePart(opts, anchor, callback, isSelectedNow) {
-	switchNode = $("<div><input name='enabletorrplugin' type='checkbox'>Enable Torrent With Filmweb Chrome Extension</input>"
-			+ prepateURLToOptions(" [More...]") + "</div>");
+function createCheckbox(id, desc) {
+	return "<input name='" + id + "' type='checkbox'>" + desc + "</input>";
+}
+
+function addEnableDisablePart(opts, anchor) {
+	switchNode = $("<div>" + createCheckbox('enable_filmweb_wito', 'Filmweb') + createCheckbox('enable_imdb_wito', 'Imdb')
+			+ createCheckbox('enable_links_wito', 'Links') + prepateURLToOptions("  [More...]") + "</div>");
 	switchNode.insertBefore(anchor);
 
-	chbNode = switchNode.find("input[name='enabletorrplugin']");
+	chbNode = switchNode.find("input[name='enable_filmweb_wito']");
 	chbNode.click(function() {
-		isSelected = $(this).is(':checked');
-		callback(isSelected);
+		opts.Integration.Integrate_with_Filmweb = $(this).is(':checked');
 		updateOptions(opts);
 		window.location.reload();
 	});
-	chbNode.attr('checked', isSelectedNow);
+	chbNode.attr('checked', opts.Integration.Integrate_with_Filmweb);
+
+	chbNode = switchNode.find("input[name='enable_imdb_wito']");
+	chbNode.click(function() {
+		opts.Integration.Integrate_with_IMDB = $(this).is(':checked');
+		updateOptions(opts);
+		window.location.reload();
+	});
+	chbNode.attr('checked', opts.Integration.Integrate_with_IMDB);
+
+	chbNode = switchNode.find("input[name='enable_links_wito']");
+	chbNode.click(function() {
+		opts.Links.Add_links = $(this).is(':checked');
+		updateOptions(opts);
+		window.location.reload();
+	});
+	chbNode.attr('checked', opts.Links.Add_links);
 
 }
 

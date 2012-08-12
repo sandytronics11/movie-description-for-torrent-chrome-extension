@@ -98,7 +98,7 @@ MovieCache.prototype.removesMoviesOlderThan = function(hours) {
 	this.log("Evicting movies from cache older than " + hours + " hours");
 	for ( var movieKey in this.content) {
 		if (this.isTsOlderThanNHours(this.content[movieKey].timestamp, hours)) {
-			this.log("evicting movie " + movieKey + " from the cache");
+			this.log("evicting movie '" + movieKey + "'");
 			delete this.content[movieKey];
 		}
 	}

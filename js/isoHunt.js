@@ -43,9 +43,7 @@ function getCleanTitleIsohunt(movieTitle) {
 
 function augmentIsoHunt(opts) {
 
-	addEnableDisablePart(opts, '#serps', function(isSelected) {
-		opts.General.Integrate_with_IsoHunt = isSelected;
-	}, opts.General.Integrate_with_IsoHunt);
+	addEnableDisablePart(opts, '#serps');
 
 	if (!opts.General.Integrate_with_IsoHunt) {
 		return;
@@ -117,7 +115,7 @@ function augmentIsoHunt(opts) {
 		}
 
 		if (opts.Links.Add_links) {
-			if (opts.Links.Use_original_title_as_query_param) {
+			if (opts.Links.Use_torrent_title_as_query_param) {
 				linksNode.append(getLinksColumn(opts.Links, {
 					title : removeDelimiter(originalTitle),
 					year : null

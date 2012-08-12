@@ -1,43 +1,34 @@
 storage.get('opts', function(result) {
-	if (result.opts==undefined) {
+	if (result.opts == undefined) {
 		result.opts = getDefaultOptions();
 	}
-	
+
 	if (result.opts.General.Enable_this_plugin) {
 
-	chrome.webRequest.onBeforeRequest.addListener(
-	  function(info) {
-//	    alert("url1 intercepted: " + info.url);
-	    return {cancel: true};
-	  },
-	  {
-	    urls: [
-	      "http://clkads.com/*",
-	      "http://player.vimeo.com/*",
-		  "http://www.888poker.com/*"
-	    ]
-	  },
-	  ["blocking"]);
+		if (result.opts.General.Integrate_with_PirateBay) {
 
-	chrome.webRequest.onBeforeRequest.addListener(
-	  function(info) {
-//	    alert("url2 intercepted: " + info.url);
-	    return {cancel: true};
-	  },
-	  {
-	    urls: [
-	      "http://ia.media-imdb.com/images/*",
-	      "http://isohunt.com/*.php*",
-	      "http://www.roulettebotplus.com/*",
-	      "http://pl.hornygirlsexposed.com/*",
-	      "http://survey-awardscenter.net/*",
-	      "http://7.rotator.wigetmedia.com/*",
-		  "http://www.wigetmedia.com/tags/isoww.js"
-	    ]
-	  },
-	  ["blocking"]);
+			chrome.webRequest.onBeforeRequest.addListener(function(info) {
+				// alert("url1 intercepted: " + info.url);
+				return {
+					cancel : true
+				};
+			}, {
+				urls : [ "http://clkads.com/*", "http://player.vimeo.com/*", "http://www.888poker.com/*" ]
+			}, [ "blocking" ]);
+
+		}
+
+		if (result.opts.General.Integrate_with_IsoHunt) {
+			chrome.webRequest.onBeforeRequest.addListener(function(info) {
+				// alert("url2 intercepted: " + info.url);
+				return {
+					cancel : true
+				};
+			}, {
+				urls : [ "http://ia.media-imdb.com/images/*", "http://isohunt.com/*.php*", "http://www.roulettebotplus.com/*",
+						"http://pl.hornygirlsexposed.com/*", "http://survey-awardscenter.net/*", "http://7.rotator.wigetmedia.com/*",
+						"http://www.wigetmedia.com/tags/isoww.js" ]
+			}, [ "blocking" ]);
+		}
 	}
 });
-
-
-

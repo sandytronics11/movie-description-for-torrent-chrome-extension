@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
-	"name": "Torrent With Filmweb Chrome Extension",
-	"version": "0.1.0",
-	"description": "Torrent With Filmweb Chrome Extension",
+	"name": "Movie Description for Torrent Chrome Extension",
+	"version": "0.2.0",
+	"description": "Movie Description for Torrent Chrome Extension",
 	"web_accessible_resources": ["ajax_loading_small.gif"],
 	
 	"background": {
@@ -15,7 +15,8 @@
 		"storage",
 	    "webRequest",
 	    "webRequestBlocking",
-	    "<all_urls>"
+	    "http://thepiratebay.se/*",
+	    "http://isohunt.com/*"
 	],
 	
 	"content_scripts": [ {
@@ -25,7 +26,6 @@
 			"http://thepiratebay.se/*",
 			"http://isohunt.com/*",
 			"http://www.filmweb.pl/*",
-			"http://www.imdb.com/*",
-			"http://ia.media-imdb.com/images/**" ]
+			"http://www.imdb.com/*" ]
 	}]
 }

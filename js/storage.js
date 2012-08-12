@@ -21,7 +21,7 @@ function getDefaultOptions() {
 			Add_Google_Graphic_link : true,
 			Add_Filmweb_link : true,
 			Add_IMDB_link : true,
-			Use_original_title_as_query_param : false,
+			Use_torrent_title_as_query_param : false,
 			Use_movie_title_as_query_param : true
 		}
 	};

@@ -7,9 +7,9 @@ function removeMetaHtmlAttrs(node, what) {
 	}
 }
 
-function extractDataFromMoviePage(contentNode) {
+function extractDataFromMoviePage(contentNode, movieid) {
 	contentNode = contentNode.children(":first").children(":first").children(":first");
-	if (contentNode.length==0){
+	if (contentNode.length == 0) {
 		return $("<p>Can't extract data - looks like IMDB layout problem :(</p>");
 	}
 	contentNode.find("#img_primary").remove();
@@ -28,7 +28,7 @@ function extractDataFromMoviePage(contentNode) {
 		$(this).replaceWith($("<strong>" + $(this).text() + "</strong>"));
 	});
 	contentNode.find("h1").each(function(index) {
-		$(this).replaceWith($("<h3>" + $(this).text() + "<h3>"));
+		$(this).replaceWith($("<h3><a href='"+movieid+"'> " + $(this).text() + "</a><h3>"));
 	});
 	removeMetaHtmlAttrs(contentNode);
 	makeHrefAbsolute(imdbUrl, contentNode);
@@ -47,10 +47,8 @@ function extractPossibleData(data) {
 			titleTitle = removeOnlyBrackets(titleTitle);
 			titleTitle = titleTitle.replace(/titles/gi, "");
 			titleTitle = titleTitle.trim();
-			
-			wrongSections = ["Keywords Approx Matches", 
-			                 "Companies Approx Matches",
-			                 "Names Approx Matches"];
+
+			wrongSections = [ "Keywords Approx Matches", "Companies Approx Matches", "Names Approx Matches" ];
 			if (containsAny(titleTitle, wrongSections)) {
 				return;
 			}
@@ -101,11 +99,12 @@ function extractPossibleData(data) {
 	return contentNode;
 }
 
-function callImdbForMovie(opts, _movieNode, _movie, _theUrl) {
+function callImdbForMovie(opts, _movieNode, _movie, _movieId) {
 
 	var Movie = _movie;
 	var movieNode = _movieNode;
-	var theUrl = _theUrl;
+	var theUrl = imdbUrl + _movieId;
+	var movieId = _movieId;
 
 	callOpts = {
 		url : theUrl,
@@ -114,7 +113,7 @@ function callImdbForMovie(opts, _movieNode, _movie, _theUrl) {
 		},
 		success : function(data) {
 			contentNode = $(data).find("#maindetails_center_top").find("#title-overview-widget");
-			contentNode = extractDataFromMoviePage(contentNode);
+			contentNode = extractDataFromMoviePage(contentNode, movieId);
 			imdbCache.addMovie(Movie, contentNode.html());
 			updateMovieSection(opts, movieNode, contentNode, null);
 		},
@@ -202,23 +201,23 @@ function callImdb(opts, _movieNode, _movie) {
 					callImdbForAnything(opts, _movieNode, _movie);
 				} else {
 
-					movieUrl = null;
+					movieId = null;
 					content.each(function(index) {
 						linkNode = $(this).find("a[href^='/title/tt']");
-						
-						if (movieUrl == null){
-							movieUrl = imdbUrl + linkNode.attr("href");	
-						} 
+
+						if (movieId == null) {
+							movieId = linkNode.attr("href");
+						}
 						if (Movie.year != null) {
 							yearNode = $(this).find(".year_type");
 							year = removeOnlyBrackets(yearNode.text());
-							if (year.indexOf(Movie.year)>=0) {
-								movieUrl = imdbUrl + linkNode.attr("href");	
+							if (year.indexOf(Movie.year) >= 0) {
+								movieId = linkNode.attr("href");
 							}
 						}
 					});
 
-					callImdbForMovie(opts, movieNode, Movie, movieUrl);
+					callImdbForMovie(opts, movieNode, Movie, movieId);
 				}
 			},
 			failure : function(data) {

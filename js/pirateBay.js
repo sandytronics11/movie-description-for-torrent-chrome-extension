@@ -1,12 +1,6 @@
 function augmentPirateBay(opts) {
 
-	addEnableDisablePart(opts, '#searchResult', function(isSelected) {
-		opts.General.Integrate_with_PirateBay = isSelected;
-	}, opts.General.Integrate_with_PirateBay);
-
-	if (!opts.General.Integrate_with_PirateBay) {
-		return;
-	}
+	addEnableDisablePart(opts, '#searchResult');
 
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("[MAIN] Removing adds");
@@ -54,7 +48,7 @@ function augmentPirateBay(opts) {
 		}
 
 		if (opts.Links.Add_links) {
-			if (opts.Links.Use_original_title_as_query_param) {
+			if (opts.Links.Use_torrent_title_as_query_param) {
 				linksNode.append(getLinksColumn(opts.Links, {
 					title : removeDelimiter(originalTitle),
 					year : null
