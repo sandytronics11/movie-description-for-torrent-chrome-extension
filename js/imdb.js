@@ -58,7 +58,7 @@ function extractPossibleData(opts, _movieNode, data, movie) {
 		tds = $(this).find("tbody").find("tr").find("td:nth-child(3)")
 		total = 0;
 		tds.each(function(index) {
-			if (total>5) {
+			if (total>3) {
 				return;
 			}
 			n = $(this);
@@ -208,12 +208,14 @@ function callImdbForSpecialTitle(opts, _movieNode, _movie) {
 
 				movieId = null;
 				content.each(function(index) {
+					if (movieId!=null){
+						return;
+					}
 					linkNode = $(this).find("a[href^='/title/tt']");
 
-					if (movieId == null) {
+					if (Movie.year==null) {
 						movieId = linkNode.attr("href");
-					}
-					if (Movie.year != null) {
+					} else {
 						yearNode = $(this).find(".year_type");
 						year = removeOnlyBrackets(yearNode.text());
 						if (year.indexOf(Movie.year) >= 0) {
@@ -221,8 +223,11 @@ function callImdbForSpecialTitle(opts, _movieNode, _movie) {
 						}
 					}
 				});
-
-				callImdbForMovie(opts, movieNode, Movie, movieId);
+				if (movieId!=null) {
+					callImdbForMovie(opts, movieNode, Movie, movieId);
+				} else {
+					callImdbForAnything(opts, movieNode, Movie);
+				}
 			}
 		},
 		failure : function(data) {
@@ -236,7 +241,6 @@ function callImdbForSpecialTitle(opts, _movieNode, _movie) {
 		$.ajax(callOpts);
 	}
 }
-
 
 function callImdbForFirstHit(opts, _movieNode, _movie) {
 	var movieNode = _movieNode;
