@@ -61,8 +61,7 @@ function extractPossibleData(_movieNode, data, movie) {
 			}
 			n = $(this);
 			n.find("a").removeAttr("onclick");
-			n.find("br").remove();
-			n.find("img").remove();
+			n.find("br,img").remove();
 			n.find("a:empty").remove();
 
 			n.find("p").each(function() {
@@ -120,7 +119,7 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 	var theUrl = imdbUrl + _movieId;
 	var movieId = _movieId;
 
-	callOpts = {
+	callAjax("callImdbForMovie", {
 		url : theUrl,
 		beforeSend : function(xhr) {
 			console.log("[IMDB] Call to get (callImdbForMovie) movie with url=" + theUrl);
@@ -134,13 +133,7 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 		failure : function(data) {
 			replaceWith(filmwebNode, "Can't connect to IMDB");
 		}
-	};
-
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-		$.ajaxq("callImdbForMovie", callOpts);
-	} else {
-		$.ajax(callOpts);
-	}
+	});
 
 }
 
@@ -160,7 +153,7 @@ function callImdbForAnything(_movieNode, _movie) {
 
 	var theUrl = imdbUrl + "/find?" + $.param(params);
 
-	callOpts = {
+	callAjax("callImdbForAnything", {
 		url : theUrl,
 		beforeSend : function(xhr) {
 			console.log("[IMDB] Call to get (callImdbForAnything) " + JSON.stringify(Movie) + " with url=" + theUrl);
@@ -175,13 +168,7 @@ function callImdbForAnything(_movieNode, _movie) {
 		failure : function(data) {
 			replaceWith(filmwebNode, "Can't connect to IMDB");
 		}
-	};
-
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-		$.ajaxq("callImdbForAnything", callOpts);
-	} else {
-		$.ajax(callOpts);
-	}
+	});
 }
 
 function callImdbForSpecialTitle(_movieNode, _movie) {
@@ -195,7 +182,7 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 
 	var theUrl = imdbUrl + "/search/title?" + $.param(params);
 
-	callOpts = {
+	callAjax("callImdbForSpecialTitle", {
 		url : theUrl,
 		beforeSend : function(xhr) {
 			console.log("[IMDB] Call to get (callImdbForSpecialTitle) " + JSON.stringify(Movie) + " with url=" + theUrl);
@@ -233,13 +220,7 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 		failure : function(data) {
 			replaceWith(filmwebNode, "Can't connect to IMDB");
 		}
-	};
-
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-		$.ajaxq("callImdbForSpecialTitle", callOpts);
-	} else {
-		$.ajax(callOpts);
-	}
+	});
 }
 
 function callImdbForFirstHit(_movieNode, _movie) {
@@ -258,7 +239,7 @@ function callImdbForFirstHit(_movieNode, _movie) {
 
 	var theUrl = imdbUrl + "/find?" + $.param(params);
 
-	callOpts = {
+	callAjax("callImdbForFirstHit", {
 		url : theUrl,
 		beforeSend : function(xhr) {
 			console.log("[IMDB] Call to get (callImdbForFirstHit) " + JSON.stringify(Movie) + " with url=" + theUrl);
@@ -277,13 +258,8 @@ function callImdbForFirstHit(_movieNode, _movie) {
 		failure : function(data) {
 			replaceWith(filmwebNode, "Can't connect to IMDB");
 		}
-	};
+	});
 
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-		$.ajaxq("callImdbForFirstHit", callOpts);
-	} else {
-		$.ajax(callOpts);
-	}
 }
 
 function callImdb(movieNode, movie) {

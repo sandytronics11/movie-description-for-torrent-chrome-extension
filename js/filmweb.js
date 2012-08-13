@@ -20,7 +20,7 @@ function callFilmweb(_movieNode, _movie) {
 
 		var theUrl = filmwebUrl + "/search/film?" + $.param(params);
 
-		callOpts = {
+		callAjax("filmWebQueue", {
 			url : theUrl,
 			beforeSend : function(xhr) {
 				console.log("[FilmWeb] Call to get " + JSON.stringify(Movie) + " with url=" + theUrl);
@@ -41,12 +41,7 @@ function callFilmweb(_movieNode, _movie) {
 			failure : function(data) {
 				replaceWith(movieNode, "Can't connect to Filmweb");
 			}
-		};
-
-		if (opts.Integration.Download_one_movie_descryption_at_a_time) {
-			$.ajaxq("filmWebQueue", callOpts);
-		} else {
-			$.ajax(callOpts);
-		}
+		});
+	
 	}
 }

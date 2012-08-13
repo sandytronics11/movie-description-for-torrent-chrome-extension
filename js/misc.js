@@ -1,3 +1,11 @@
+function callAjax(qname, callOpts) {
+	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
+		$.ajaxq(qname, callOpts);
+	} else {
+		$.ajax(callOpts);
+	}
+}
+
 function replaceWith(node, str) {
 	node.empty().append(str);
 }

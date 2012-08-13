@@ -59,17 +59,16 @@ function augmentIsoHunt() {
 
 	resultSet = $('#serps').find("tbody").children(":first");
 	if (opts.Integration.Integrate_with_Filmweb) {
-		resultSet.append("<th id='filmweb_th'>" + prepateURLToOptions("FilmWeb") + "</th>");
+		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
 	if (opts.Integration.Integrate_with_IMDB) {
-		resultSet.append("<th id='imdb_th'>" + prepateURLToOptions("IMDB") + "</th>");
+		resultSet.append("<th>" + prepateURLToOptions("IMDB") + "</th>");
 	}
 	if (opts.Links.Add_links) {
-		resultSet.append("<th id='links_th'>" + prepateURLToOptions("Links") + "</th>");
+		resultSet.append("<th>" + prepateURLToOptions("Links") + "</th>");
 	}
 
 	console.log("[MAIN] Begin of scanning");
-	
 	
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		$('#serps').find("tbody").children().each(function(index) {
@@ -85,9 +84,9 @@ function augmentIsoHunt() {
 			return;
 		}
 
-		var filmwebNode = $("<td class=\"row3\" id=\"filmweb_" + index + "\">" + getAjaxIcon() + "</td>");
-		var imdbNode = $("<td class=\"row3\" id=\"imdb_" + index + "\">" + getAjaxIcon() + "</td>");
-		var linksNode = $("<td class=\"row3\" id=\"links_" + index + "\"></td>");
+		var filmwebNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
+		var imdbNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
+		var linksNode = $("<td class=\"row3\" \"></td>");
 		if (opts.Integration.Integrate_with_Filmweb) {
 			$(this).append(filmwebNode);
 		}
