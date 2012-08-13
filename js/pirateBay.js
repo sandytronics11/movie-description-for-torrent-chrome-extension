@@ -1,6 +1,6 @@
-function augmentPirateBay(opts) {
+function augmentPirateBay() {
 
-	addEnableDisablePart(opts, '#searchResult');
+	addEnableDisablePart('#searchResult');
 
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("[MAIN] Removing adds");
@@ -64,12 +64,12 @@ function augmentPirateBay(opts) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(filmwebNode, getAjaxIcon());
-					callFilmweb(opts, filmwebNode, cleanedTitle);
+					callFilmweb(filmwebNode, cleanedTitle);
 
 				});
 				replaceWith(filmwebNode, node);
 			} else {
-				callFilmweb(opts, filmwebNode, cleanedTitle);
+				callFilmweb(filmwebNode, cleanedTitle);
 			}
 		}
 
@@ -78,11 +78,11 @@ function augmentPirateBay(opts) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(imdbNode, getAjaxIcon());
-					callImdb(opts, imdbNode, cleanedTitle);
+					callImdb(imdbNode, cleanedTitle);
 				});
 				replaceWith(imdbNode, node);
 			} else {
-				callImdb(opts, imdbNode, cleanedTitle);
+				callImdb(imdbNode, cleanedTitle);
 			}
 		}
 	});

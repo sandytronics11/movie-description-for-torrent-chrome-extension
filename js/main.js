@@ -1,3 +1,7 @@
+var opts;
+var filmwebCache;
+var imdbCache;
+
 function isPirateBay() {
 	return window.location.hostname.indexOf("pirate") >= 0;
 }
@@ -8,24 +12,28 @@ function reloadCacheAndDo(callback) {
 			filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
 			imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
 			callback();
-			
+
 		});
-	});	
+	});
 }
 
 $(document).ready(function() {
 
 	chrome.storage.local.get('opts', function(result) {
 		if (result.opts == undefined) {
-			result.opts = getDefaultOptions();
+			opts = getDefaultOptions();
+		} else {
+			opts = result.opts;
 		}
-		opts = result.opts;
 		if (opts.General.Enable_this_plugin) {
+
+			filmwebCache = new MovieCache('filmwebCache');
+			imdbCache = new MovieCache('imdbCache');
 			reloadCacheAndDo(function() {
 				if (isPirateBay()) {
-					augmentPirateBay(opts);
+					augmentPirateBay();
 				} else {
-					augmentIsoHunt(opts);
+					augmentIsoHunt();
 				}
 			});
 		}

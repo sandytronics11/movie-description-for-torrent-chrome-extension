@@ -35,7 +35,7 @@ function resetOptions() {
 	});
 }
 
-function updateOptions(opts) {
+function updateOptions() {
 	storage.set({
 		'opts' : opts
 	});

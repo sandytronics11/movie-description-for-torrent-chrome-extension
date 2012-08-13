@@ -1,8 +1,5 @@
 var storage = chrome.storage.local;
 
-var filmwebCache = new MovieCache('filmwebCache');
-var imdbCache = new MovieCache('imdbCache');
-
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
 	this.quietPeriodMs = 3000;

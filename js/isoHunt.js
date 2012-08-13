@@ -41,9 +41,9 @@ function getCleanTitleIsohunt(movieTitle) {
 	return getCleanTitleGeneric(movieTitle);
 }
 
-function augmentIsoHunt(opts) {
+function augmentIsoHunt() {
 
-	addEnableDisablePart(opts, '#serps');
+	addEnableDisablePart('#serps');
 
 	if (!opts.General.Integrate_with_IsoHunt) {
 		return;
@@ -100,7 +100,7 @@ function augmentIsoHunt(opts) {
 
 		torrentNameNode = $(this).children("td[id^='name']");
 		if (torrentNameNode.length == 0) {
-			console.log("[ERROR]: there is no torrent name node");
+			console.log("There is no torrent name node");
 			return;
 		}
 
@@ -109,40 +109,39 @@ function augmentIsoHunt(opts) {
 			originalTitle = torrentNameNode.children("a[id^='RL']").attr("title");
 		}
 		if (originalTitle == null || originalTitle == undefined || originalTitle == "") {
-			console.log("[ERROR]: there is no torrent title");
+			console.error("There is no torrent title");
 			return;
 		}
 		console.log("-------");
 		console.log("[MAIN] New title: '" + removeDelimiter(originalTitle) + "'");
 		var cleanedTitle = getCleanTitleIsohunt(originalTitle);
 		if (cleanedTitle == null) {
-			console.log("[ERROR]: torrent title is empty");
+			console.error("Torrent title is empty");
 			return;
 		}
 
 		if (opts.Links.Add_links) {
 			if (opts.Links.Use_torrent_title_as_query_param) {
-				linksNode.append(getLinksColumn(opts.Links, {
+				linksNode.append(getLinksColumn({
 					title : removeDelimiter(originalTitle),
 					year : null
 				}));
 			}
 			if (opts.Links.Use_movie_title_as_query_param) {
-				linksNode.append(getLinksColumn(opts.Links, cleanedTitle));
+				linksNode.append(getLinksColumn(cleanedTitle));
 			}
 		}
-
 		if (opts.Integration.Integrate_with_Filmweb) {
 			if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(filmwebNode, getAjaxIcon());
-					callFilmweb(opts, filmwebNode, cleanedTitle);
+					callFilmweb(filmwebNode, cleanedTitle);
 
 				});
 				replaceWith(filmwebNode, node);
 			} else {
-				callFilmweb(opts, filmwebNode, cleanedTitle);
+				callFilmweb(filmwebNode, cleanedTitle);
 			}
 		}
 
@@ -151,11 +150,11 @@ function augmentIsoHunt(opts) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(imdbNode, getAjaxIcon());
-					callImdb(opts, imdbNode, cleanedTitle);
+					callImdb(imdbNode, cleanedTitle);
 				});
 				replaceWith(imdbNode, node);
 			} else {
-				callImdb(opts, imdbNode, cleanedTitle);
+				callImdb(imdbNode, cleanedTitle);
 			}
 		}
 

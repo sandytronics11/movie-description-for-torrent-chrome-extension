@@ -31,10 +31,10 @@ function makeHrefAbsolute(prefix, contentNode) {
 function getRatingFromFilmWeb(contentNode) {
 	rating = null;
 	try {
-		rating = contentNode.find(" .searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
+		rating = contentNode.find(".searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
 		rating = parseFloat(rating);
 	} catch (err) {
-		console.log("[WARN]: while extracting filmweb rating: " + err);
+		console.warn("Can't extract extract filmweb rating: " + err);
 	}
 	return rating;
 }
@@ -42,15 +42,15 @@ function getRatingFromFilmWeb(contentNode) {
 function getRatingFromIMDB(contentNode) {
 	rating = null;
 	try {
-		rating = contentNode.find(" .star-box-details").children(":first").text();
+		rating = contentNode.find(".star-box-details").children(":first").text();
 		rating = parseFloat(rating);
 	} catch (err) {
-		console.log("[WARN]: while extracting imdb rating: " + err);
+		console.warn("Can't extract extract imdb rating: " + err);
 	}
 	return rating;
 }
 
-function updateMovieSection(opts, movieNode, contentNode, movie) {
+function updateMovieSection(movieNode, contentNode, movie) {
 	if (contentNode.length == 0) {
 		if (movie.year != undefined && movie.year != null) {
 			replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
@@ -76,7 +76,7 @@ function createCheckbox(id, desc) {
 	return "<input name='" + id + "' type='checkbox'>" + desc + "</input>";
 }
 
-function addEnableDisablePart(opts, anchor) {
+function addEnableDisablePart(anchor) {
 	switchNode = $("<div>" + createCheckbox('enable_filmweb_wito', 'Filmweb') + createCheckbox('enable_imdb_wito', 'Imdb')
 			+ createCheckbox('enable_links_wito', 'Links') + prepateURLToOptions("  [More...]") + "</div>");
 	switchNode.insertBefore(anchor);
@@ -84,7 +84,7 @@ function addEnableDisablePart(opts, anchor) {
 	chbNode = switchNode.find("input[name='enable_filmweb_wito']");
 	chbNode.click(function() {
 		opts.Integration.Integrate_with_Filmweb = $(this).is(':checked');
-		updateOptions(opts);
+		updateOptions();
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Integration.Integrate_with_Filmweb);
@@ -92,7 +92,7 @@ function addEnableDisablePart(opts, anchor) {
 	chbNode = switchNode.find("input[name='enable_imdb_wito']");
 	chbNode.click(function() {
 		opts.Integration.Integrate_with_IMDB = $(this).is(':checked');
-		updateOptions(opts);
+		updateOptions();
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Integration.Integrate_with_IMDB);
@@ -100,7 +100,7 @@ function addEnableDisablePart(opts, anchor) {
 	chbNode = switchNode.find("input[name='enable_links_wito']");
 	chbNode.click(function() {
 		opts.Links.Add_links = $(this).is(':checked');
-		updateOptions(opts);
+		updateOptions();
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Links.Add_links);
@@ -213,16 +213,16 @@ function getCleanTitleGeneric(originalTitle) {
 	};
 }
 
-function getLinksColumn(optLiks, param) {
+function getLinksColumn(param) {
 
 	node = $("<p></p>");
-	if (optLiks.Add_Google_Search_link) {
+	if (opts.Links.Add_Google_Search_link) {
 		node.append("<a href='https://www.google.pl/search?" + $.param({
 			q : param.title
 		}) + "' target='_blank'>[search]</a>");
 		node.append("<br/>");
 	}
-	if (optLiks.Add_Google_Graphic_link) {
+	if (opts.Links.Add_Google_Graphic_link) {
 		node.append("<a href='https://www.google.pl/search?" + $.param({
 			safe : "off",
 			q : param.title,
@@ -230,13 +230,13 @@ function getLinksColumn(optLiks, param) {
 		}) + "' target='_blank'>[pics]</a>");
 		node.append("<br/>");
 	}
-	if (optLiks.Add_Filmweb_link) {
+	if (opts.Links.Add_Filmweb_link) {
 		node.append("<a href='http://www.filmweb.pl/search?" + $.param({
 			q : param.title
 		}) + "' target='_blank'>[filmweb]</a>");
 		node.append("<br/>");
 	}
-	if (optLiks.Add_IMDB_link) {
+	if (opts.Links.Add_IMDB_link) {
 		yearInfo = "";
 		if (param.year != null) {
 			yearInfo = " (" + param.year + ")";

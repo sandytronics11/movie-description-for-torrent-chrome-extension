@@ -1,11 +1,13 @@
-function callFilmweb(opts, _movieNode, _movie) {
+var filmwebUrl = "http://www.filmweb.pl";
+
+function callFilmweb(_movieNode, _movie) {
 
 	var movieNode = _movieNode;
 	var Movie = _movie;
 
 	cachedContentNode = filmwebCache.getFromCache(Movie);
 	if (cachedContentNode != undefined) {
-		updateMovieSection(opts, movieNode, $("<div></div>").append(cachedContentNode), Movie);
+		updateMovieSection(movieNode, $("<div></div>").append(cachedContentNode), Movie);
 	} else {
 
 		params = {
@@ -16,7 +18,7 @@ function callFilmweb(opts, _movieNode, _movie) {
 			params["endYear"] = Movie.year;
 		}
 
-		var theUrl = "http://www.filmweb.pl/search/film?" + $.param(params);
+		var theUrl = filmwebUrl + "/search/film?" + $.param(params);
 
 		callOpts = {
 			url : theUrl,
@@ -25,16 +27,16 @@ function callFilmweb(opts, _movieNode, _movie) {
 			},
 			success : function(data) {
 				contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
-				
+
 				if (!opts.Integration.Display_detailed_informations) {
 					contentNode.find(".searchResultDetails").remove();
 				}
-	
+
 				if (contentNode.length > 0) {
-					makeHrefAbsolute("http://www.filmweb.pl", contentNode);
+					makeHrefAbsolute(filmwebUrl, contentNode);
 					filmwebCache.addMovie(Movie, contentNode.html());
 				}
-				updateMovieSection(opts, movieNode, contentNode, Movie);
+				updateMovieSection(movieNode, contentNode, Movie);
 			},
 			failure : function(data) {
 				replaceWith(movieNode, "Can't connect to Filmweb");

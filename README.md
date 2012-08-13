@@ -12,7 +12,7 @@ Google Chrome Extension for torrent sites with following features:
 
 To install:
 
-1. Download the code, e.g. `https://github.com/witoza/torrent-with-filmweb-chrome-extension/zipball/master`
+1. Download the code, e.g. ` https://github.com/witoza/torrent-with-filmweb-chrome-extension/zipball/master`
 2. Navigate chrome to `chrome://extensions`
 3. Check the `Developer mode` toggle
 4. Click on `Load Unpacked Extension...`

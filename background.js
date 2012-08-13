@@ -27,7 +27,8 @@ storage.get('opts', function(result) {
 			}, {
 				urls : [ "http://ia.media-imdb.com/images/*", "http://isohunt.com/*.php*", "http://www.roulettebotplus.com/*",
 						"http://pl.hornygirlsexposed.com/*", "http://survey-awardscenter.net/*", "http://7.rotator.wigetmedia.com/*",
-						"http://www.wigetmedia.com/tags/isoww.js" ]
+						"http://www.wigetmedia.com/tags/isoww.js", "http://www.ad4game.com/*", "http://www.roulettebotplus.com/*",
+						"http://geoadserve2.com/*", "http://**wigetmedia.com/*", "http://www.mgid.com/*", "http://ad.yieldmanager.com/*" ]
 			}, [ "blocking" ]);
 		}
 	}
