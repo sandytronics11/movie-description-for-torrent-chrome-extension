@@ -1,5 +1,8 @@
 var storage = chrome.storage.local;
 
+var filmwebCache = new MovieCache('filmwebCache');
+var imdbCache = new MovieCache('imdbCache');
+
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
 	this.quietPeriodMs = 3000;
@@ -93,11 +96,16 @@ MovieCache.prototype.isTsOlderThanNHours = function(timestamp, hours) {
 
 MovieCache.prototype.removesMoviesOlderThan = function(hours) {
 	this.log("Evicting movies from cache older than " + hours + " hours");
+	var anyDeleted = false;
 	for ( var movieKey in this.content) {
 		if (this.isTsOlderThanNHours(this.content[movieKey].timestamp, hours)) {
 			this.log("evicting movie '" + movieKey + "'");
+			anyDeleted = true;
 			delete this.content[movieKey];
 		}
+	}
+	if (anyDeleted) {
+		this.save();
 	}
 };
 

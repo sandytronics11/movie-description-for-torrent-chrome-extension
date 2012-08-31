@@ -1,7 +1,3 @@
-var opts;
-var filmwebCache;
-var imdbCache;
-
 function isPirateBay() {
 	return window.location.hostname.indexOf("pirate") >= 0;
 }
@@ -27,8 +23,6 @@ $(document).ready(function() {
 		}
 		if (opts.General.Enable_this_plugin) {
 
-			filmwebCache = new MovieCache('filmwebCache');
-			imdbCache = new MovieCache('imdbCache');
 			reloadCacheAndDo(function() {
 				if (isPirateBay()) {
 					augmentPirateBay();

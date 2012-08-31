@@ -1,4 +1,5 @@
 var storage = chrome.storage.local;
+var opts;
 
 function getDefaultOptions() {
 	return {

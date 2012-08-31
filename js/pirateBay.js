@@ -49,13 +49,13 @@ function augmentPirateBay() {
 
 		if (opts.Links.Add_links) {
 			if (opts.Links.Use_torrent_title_as_query_param) {
-				linksNode.append(getLinksColumn(opts.Links, {
+				linksNode.append(getLinksColumn({
 					title : removeDelimiter(originalTitle),
 					year : null
 				}));
 			}
 			if (opts.Links.Use_movie_title_as_query_param) {
-				linksNode.append(getLinksColumn(opts.Links, cleanedTitle));
+				linksNode.append(getLinksColumn(cleanedTitle));
 			}
 		}
 
