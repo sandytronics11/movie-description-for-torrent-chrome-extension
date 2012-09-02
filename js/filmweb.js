@@ -1,13 +1,24 @@
 var filmwebUrl = "http://www.filmweb.pl";
 
+function getRatingFromFilmWeb(contentNode) {
+	var rating = null;
+	try {
+		rating = contentNode.find(".searchResultRating").contents()[0].wholeText;
+		rating = rating.replace(new RegExp("\\,", "gi"), ".");
+		rating = parseFloat(rating);
+	} catch (err) {
+		console.warn("Can't extract filmweb rating: " + err);
+	}
+	return rating;
+}
+
 function callFilmweb(_movieNode, _movie) {
 
 	var movieNode = _movieNode;
 	var Movie = _movie;
-
-	cachedContentNode = filmwebCache.getFromCache(Movie);
-	if (cachedContentNode != undefined) {
-		updateMovieSection(movieNode, $("<div></div>").append(cachedContentNode), Movie);
+	var cachedMovie = filmwebCache.getFromCache(Movie);
+	if (cachedMovie != undefined) {
+		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating);
 	} else {
 
 		params = {
@@ -34,14 +45,20 @@ function callFilmweb(_movieNode, _movie) {
 
 				if (contentNode.length > 0) {
 					makeHrefAbsolute(filmwebUrl, contentNode);
-					filmwebCache.addMovie(Movie, contentNode.html());
+					var rating = getRatingFromFilmWeb(contentNode);
+					contentNode.find("*").removeAttr("class");
+					contentNode.find("span:empty").remove();
+					filmwebCache.addMovie(Movie, contentNode.html(), rating);
+					updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+				} else {
+					updateMovieSection(movieNode, null, Movie);
 				}
-				updateMovieSection(movieNode, contentNode, Movie);
+
 			},
 			failure : function(data) {
 				replaceWith(movieNode, "Can't connect to Filmweb");
 			}
 		});
-	
+
 	}
 }

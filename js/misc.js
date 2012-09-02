@@ -36,45 +36,25 @@ function makeHrefAbsolute(prefix, contentNode) {
 	});
 }
 
-function getRatingFromFilmWeb(contentNode) {
-	rating = null;
-	try {
-		rating = contentNode.find(".searchResultRating").contents()[0].wholeText.replace("/\\,/gi", ".");
-		rating = parseFloat(rating);
-	} catch (err) {
-		console.warn("Can't extract extract filmweb rating: " + err);
-	}
-	return rating;
-}
-
-function getRatingFromIMDB(contentNode) {
-	rating = null;
-	try {
-		rating = contentNode.find(".star-box-details").children(":first").text();
-		rating = parseFloat(rating);
-	} catch (err) {
-		console.warn("Can't extract extract imdb rating: " + err);
-	}
-	return rating;
-}
-
-function updateMovieSection(movieNode, contentNode, movie) {
-	if (contentNode.length == 0) {
+function updateMovieSection(movieNode, content, movie, rating) {
+	if (content == null) {
 		if (movie.year != undefined && movie.year != null) {
 			replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
 		} else {
 			replaceWith(movieNode, "Can't find '" + movie.title + "'.");
 		}
 	} else {
-		replaceWith(movieNode, contentNode);
+		replaceWith(movieNode, $("<div class='moviedesc' rating='" + rating + "'></div>").append(content));
 
-		rating = getRatingFromFilmWeb(contentNode);
-		if (rating == null) {
-			rating = getRatingFromIMDB(contentNode);
-		}
+		if (rating > 0) {
 
-		if (rating >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
-			movieNode.css('background-color', '#FFFFAA');
+			if (rating <= parseFloat(opts.Integration.Hide_movies_with_rating_less_than)) {
+				movieNode.parent().hide();
+			}
+
+			if (rating >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
+				movieNode.css('background-color', '#FFFFAA');
+			}
 		}
 
 	}

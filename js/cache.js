@@ -5,7 +5,7 @@ var imdbCache = new MovieCache('imdbCache');
 
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
-	this.quietPeriodMs = 3000;
+	this.quietPeriodMs = 10000;
 	this.content = null;
 	this.saveTimer = null;
 	this.saveLastTimestamp = null;
@@ -51,7 +51,7 @@ MovieCache.prototype.saveCacheForReal = function() {
 };
 
 MovieCache.prototype.turnOnSaveClock = function() {
-	this.saveCacheLastTimestamp = new Date().getTime();
+	this.saveLastTimestamp = new Date().getTime();
 	var _this = this;
 	this.saveCacheTimer = setTimeout(function() {
 		_this.saveCacheForReal();
@@ -59,28 +59,27 @@ MovieCache.prototype.turnOnSaveClock = function() {
 };
 
 MovieCache.prototype.save = function() {
-	if (this.saveLastTimestamp == null) {
-		this.turnOnSaveClock();
-	} else {
+	if (this.saveLastTimestamp != null) {
 		if (new Date().getTime() - this.saveLastTimestamp < this.quietPeriodMs) {
 			this.log("Not need to update cache yet");
 			clearTimeout(this.saveTimer);
 		}
-		this.turnOnSaveClock();
 	}
+	this.turnOnSaveClock();
 };
 
 MovieCache.prototype.getMovieKey = function(Movie) {
 	return Movie.title + "|" + Movie.year;
 };
 
-MovieCache.prototype.addMovie = function(Movie, Content) {
+MovieCache.prototype.addMovie = function(Movie, _content, _rating) {
 	key = this.getMovieKey(Movie);
 	ts = new Date().getTime();
 	this.log("Adding movie " + key + " to the cache with timestamp " + ts);
 
 	this.content[key] = {
-		content : Content,
+		content : _content,
+		rating : _rating,
 		timestamp : ts
 	};
 	this.save();
@@ -112,9 +111,8 @@ MovieCache.prototype.removesMoviesOlderThan = function(hours) {
 MovieCache.prototype.getFromCache = function(Movie) {
 	key = this.getMovieKey(Movie);
 	cm = this.content[key];
-	if (cm == undefined) {
-		return undefined;
+	if (cm != undefined) {		
+		this.log("Cache hit for " + key);
 	}
-	this.log("Cache hit for " + key);
-	return cm.content;
+	return cm;
 };

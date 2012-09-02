@@ -1,7 +1,18 @@
 var imdbUrl = "http://www.imdb.com";
 
+function getRatingFromIMDB(contentNode) {
+	var rating = null;
+	try {
+		rating = contentNode.find(".star-box-details").children(":first").text();
+		rating = parseFloat(rating);
+	} catch (err) {
+		console.warn("Can't extract imdb rating: " + err);
+	}
+	return rating;
+}
+
 function removeMetaHtmlAttrs(node, what) {
-	what = [ "id", "itemprop", "itemscope", "itemtype", "onclick" ];
+	what = [ "id", "itemprop", "itemscope", "itemtype", "onclick"];
 	for (i in what) {
 		node.find("*").removeAttr(what[i]);
 	}
@@ -122,13 +133,17 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 	callAjax("callImdbForMovie", {
 		url : theUrl,
 		beforeSend : function(xhr) {
-			console.log("[IMDB] Call to get (callImdbForMovie) movie with url=" + theUrl);
+			console.log("[IMDB] callImdbForMovie with url=" + theUrl);
 		},
 		success : function(data) {
 			contentNode = $(data).find("#overview-top");
 			contentNode = extractDataFromMoviePage(contentNode, movieId);
-			imdbCache.addMovie(Movie, contentNode.html());
-			updateMovieSection(movieNode, contentNode, null);
+			
+			var rating = getRatingFromIMDB(contentNode);
+			contentNode.find("*").removeAttr("class");
+			imdbCache.addMovie(Movie, contentNode.html(), rating);
+			updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+
 		},
 		failure : function(data) {
 			replaceWith(filmwebNode, "Can't connect to IMDB");
@@ -156,13 +171,15 @@ function callImdbForAnything(_movieNode, _movie) {
 	callAjax("callImdbForAnything", {
 		url : theUrl,
 		beforeSend : function(xhr) {
-			console.log("[IMDB] Call to get (callImdbForAnything) " + JSON.stringify(Movie) + " with url=" + theUrl);
+			console.log("[IMDB] callImdbForAnything " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
 			contentNode = extractPossibleData(movieNode, data, Movie);
 			if (contentNode != null) {
-				imdbCache.addMovie(Movie, contentNode.html());
-				updateMovieSection(movieNode, contentNode, Movie);
+				var rating = getRatingFromIMDB(contentNode);
+				contentNode.find("*").removeAttr("class");
+				imdbCache.addMovie(Movie, contentNode.html(), rating);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating);
 			}
 		},
 		failure : function(data) {
@@ -185,7 +202,7 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 	callAjax("callImdbForSpecialTitle", {
 		url : theUrl,
 		beforeSend : function(xhr) {
-			console.log("[IMDB] Call to get (callImdbForSpecialTitle) " + JSON.stringify(Movie) + " with url=" + theUrl);
+			console.log("[IMDB] callImdbForSpecialTitle " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
 			content = $(data).find("#main").find("table").find(".title");
@@ -242,14 +259,16 @@ function callImdbForFirstHit(_movieNode, _movie) {
 	callAjax("callImdbForFirstHit", {
 		url : theUrl,
 		beforeSend : function(xhr) {
-			console.log("[IMDB] Call to get (callImdbForFirstHit) " + JSON.stringify(Movie) + " with url=" + theUrl);
+			console.log("[IMDB] callImdbForFirstHit: " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
 			contentNode = $(data).find("#overview-top");
 			if (contentNode.length > 0) {
-				contentNode = extractDataFromMoviePage(contentNode, "TODO");
-				imdbCache.addMovie(Movie, contentNode.html());
-				updateMovieSection(movieNode, contentNode, Movie);
+				contentNode = extractDataFromMoviePage(contentNode, "need_to_fix_this");
+				var rating = getRatingFromIMDB(contentNode);
+				contentNode.find("*").removeAttr("class");
+				imdbCache.addMovie(Movie, contentNode.html(), rating);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating);
 			} else {
 				callImdbForSpecialTitle(movieNode, Movie);
 			}
@@ -264,9 +283,9 @@ function callImdbForFirstHit(_movieNode, _movie) {
 
 function callImdb(movieNode, movie) {
 
-	cachedContentNode = imdbCache.getFromCache(movie);
-	if (cachedContentNode != undefined) {
-		updateMovieSection(movieNode, $("<div></div>").append(cachedContentNode), movie);
+	var cachedMovie = imdbCache.getFromCache(movie);
+	if (cachedMovie != undefined) {
+		updateMovieSection(movieNode, cachedMovie.content, movie, cachedMovie.rating);
 	} else {
 		callImdbForFirstHit(movieNode, movie);
 	}
