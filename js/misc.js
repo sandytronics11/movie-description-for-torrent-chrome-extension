@@ -1,3 +1,39 @@
+function callFilmwebImpl(filmwebNode, cleanedTitle) {
+	var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
+	if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
+		node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
+		node.click(function() {
+			replaceWith(filmwebNode, getAjaxIcon());
+			callFilmweb(filmwebNode, cleanedTitle, function(found) {
+				if (callIMDBWhenNeeded && !found) {
+					callIMDBImpl(filmwebNode, cleanedTitle);
+				}
+			});
+
+		});
+		replaceWith(filmwebNode, node);
+	} else {
+		callFilmweb(filmwebNode, cleanedTitle, function(found) {
+			if (callIMDBWhenNeeded && !found) {
+				callIMDBImpl(filmwebNode, cleanedTitle);
+			}
+		});
+	}
+}
+
+function callIMDBImpl(imdbNode, cleanedTitle) {
+	if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
+		var node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
+		node.click(function() {
+			replaceWith(imdbNode, getAjaxIcon());
+			callImdb(imdbNode, cleanedTitle);
+		});
+		replaceWith(imdbNode, node);
+	} else {
+		callImdb(imdbNode, cleanedTitle);
+	}
+}
+
 function callAjax(qname, callOpts) {
 	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
 		$.ajaxq(qname, callOpts);

@@ -60,40 +60,10 @@ function augmentPirateBay() {
 		}
 
 		if (opts.FilmWeb.Integrate_with_FilmWeb) {
-			var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
-
-			if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
-				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
-				node.click(function() {
-					replaceWith(filmwebNode, getAjaxIcon());
-					callFilmweb(filmwebNode, cleanedTitle, function(found) {
-						if (callIMDBWhenNeeded && !found) {
-							// TODO:
-						}
-					});
-
-				});
-				replaceWith(filmwebNode, node);
-			} else {
-				callFilmweb(filmwebNode, cleanedTitle, function(found) {
-					if (callIMDBWhenNeeded && !found) {
-						// TODO:
-					}
-				});
-			}
+			callFilmwebImpl(filmwebNode, cleanedTitle);
 		}
-
 		if (opts.IMDB.Integrate_with_IMDB) {
-			if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
-				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
-				node.click(function() {
-					replaceWith(imdbNode, getAjaxIcon());
-					callImdb(imdbNode, cleanedTitle);
-				});
-				replaceWith(imdbNode, node);
-			} else {
-				callImdb(imdbNode, cleanedTitle);
-			}
+			callIMDBImpl(imdbNode, cleanedTitle);
 		}
 	});
 	console.log("[MAIN] End of scanning");

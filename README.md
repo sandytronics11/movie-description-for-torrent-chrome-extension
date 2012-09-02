@@ -1,4 +1,4 @@
-Movie Description for Torrent Chrome Extension v0.2.2
+Movie Description for Torrent Chrome Extension v0.2.3
 =============================
 
 Google Chrome Extension for torrent sites with following features:

@@ -26,9 +26,9 @@ function getOriginalMovieTitle(htmlNode) {
 function getCleanTitleIsohunt(movieTitle) {
 	movieTitle = removeBrackets(movieTitle, true);
 
-	what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation", "Documentary",
-			"Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure", "Sci\\-Fi", "Tutorial", "Mystery", "Family",
-			"Dance", "War", "western", "horror", "animation", "thriller", "westerns", "action", "pop" ];
+	what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation",
+			"Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure", "Sci\\-Fi",
+			"Tutorial", "Mystery", "Family", "Dance", "War", "western", "horror", "animation", "thriller", "westerns", "action", "pop" ];
 
 	for (i in what) {
 		movieTitle = movieTitle.replace(new RegExp("^" + what[i] + DELIMITER, "gi"), "");
@@ -69,7 +69,7 @@ function augmentIsoHunt() {
 	}
 
 	console.log("[MAIN] Begin of scanning");
-	
+
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		$('#serps').find("tbody").children().each(function(index) {
 			$(this).removeAttr("onclick");
@@ -77,7 +77,7 @@ function augmentIsoHunt() {
 			$(this).removeAttr("onmouseout");
 		});
 	}
-	
+
 	$('#serps').find("tbody").children(" .hlRow").each(function(index) {
 
 		if ($(this).find("th").length > 0) {
@@ -131,42 +131,11 @@ function augmentIsoHunt() {
 			}
 		}
 		if (opts.FilmWeb.Integrate_with_FilmWeb) {
-			var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
-
-			if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
-				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
-				node.click(function() {
-					replaceWith(filmwebNode, getAjaxIcon());
-					callFilmweb(filmwebNode, cleanedTitle, function(found) {
-						if (callIMDBWhenNeeded && !found) {
-							// TODO:
-						}
-					});
-
-				});
-				replaceWith(filmwebNode, node);
-			} else {
-				callFilmweb(filmwebNode, cleanedTitle, function(found) {
-					if (callIMDBWhenNeeded && !found) {
-						// TODO:
-					}
-				});
-			}
+			callFilmwebImpl(filmwebNode, cleanedTitle);
 		}
-
 		if (opts.IMDB.Integrate_with_IMDB) {
-			if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
-				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
-				node.click(function() {
-					replaceWith(imdbNode, getAjaxIcon());
-					callImdb(imdbNode, cleanedTitle);
-				});
-				replaceWith(imdbNode, node);
-			} else {
-				callImdb(imdbNode, cleanedTitle);
-			}
+			callIMDBImpl(imdbNode, cleanedTitle);
 		}
-
 	});
 	console.log("[MAIN] End of scanning");
 }
