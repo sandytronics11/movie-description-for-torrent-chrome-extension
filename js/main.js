@@ -5,8 +5,8 @@ function isPirateBay() {
 function reloadCacheAndDo(callback) {
 	filmwebCache.reload(function() {
 		imdbCache.reload(function() {
-			filmwebCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
-			imdbCache.removesMoviesOlderThan(opts.Integration.Expire_cache_after_hours);
+			filmwebCache.removesMoviesOlderThan(opts.FilmWeb.Expire_cache_after_hours);
+			imdbCache.removesMoviesOlderThan(opts.IMDB.Expire_cache_after_hours);
 			callback();
 
 		});
@@ -22,7 +22,7 @@ $(document).ready(function() {
 			opts = result.opts;
 		}
 		if (opts.General.Enable_this_plugin) {
-
+			console.log("opts = "+JSON.stringify(opts));
 			reloadCacheAndDo(function() {
 				if (isPirateBay()) {
 					augmentPirateBay();

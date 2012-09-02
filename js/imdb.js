@@ -38,6 +38,7 @@ function extractDataFromMoviePage(n, movieId) {
 		$(this).replaceWith($("<h3><a href='" + movieId + "'> " + $(this).text() + "</a><h3>"));
 	});
 	removeMetaHtmlAttrs(n);
+	//WRONG
 	makeHrefAbsolute(imdbUrl, n);
 	return $("<div>" + removeNewLines(n.html()) + "</div>");
 }
@@ -142,7 +143,7 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 			var rating = getRatingFromIMDB(contentNode);
 			contentNode.find("*").removeAttr("class");
 			imdbCache.addMovie(Movie, contentNode.html(), rating);
-			updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+			updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
 
 		},
 		failure : function(data) {
@@ -179,7 +180,7 @@ function callImdbForAnything(_movieNode, _movie) {
 				var rating = getRatingFromIMDB(contentNode);
 				contentNode.find("*").removeAttr("class");
 				imdbCache.addMovie(Movie, contentNode.html(), rating);
-				updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
 			}
 		},
 		failure : function(data) {
@@ -268,7 +269,7 @@ function callImdbForFirstHit(_movieNode, _movie) {
 				var rating = getRatingFromIMDB(contentNode);
 				contentNode.find("*").removeAttr("class");
 				imdbCache.addMovie(Movie, contentNode.html(), rating);
-				updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
 			} else {
 				callImdbForSpecialTitle(movieNode, Movie);
 			}
@@ -285,7 +286,7 @@ function callImdb(movieNode, movie) {
 
 	var cachedMovie = imdbCache.getFromCache(movie);
 	if (cachedMovie != undefined) {
-		updateMovieSection(movieNode, cachedMovie.content, movie, cachedMovie.rating);
+		updateMovieSection(movieNode, cachedMovie.content, movie, cachedMovie.rating, opts.IMDB);
 	} else {
 		callImdbForFirstHit(movieNode, movie);
 	}

@@ -12,13 +12,13 @@ function getRatingFromFilmWeb(contentNode) {
 	return rating;
 }
 
-function callFilmweb(_movieNode, _movie) {
+function callFilmweb(_movieNode, _movie, callback) {
 
 	var movieNode = _movieNode;
 	var Movie = _movie;
 	var cachedMovie = filmwebCache.getFromCache(Movie);
 	if (cachedMovie != undefined) {
-		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating);
+		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating, opts.FilmWeb);
 	} else {
 
 		params = {
@@ -49,9 +49,11 @@ function callFilmweb(_movieNode, _movie) {
 					contentNode.find("*").removeAttr("class");
 					contentNode.find("span:empty").remove();
 					filmwebCache.addMovie(Movie, contentNode.html(), rating);
-					updateMovieSection(movieNode, contentNode.html(), Movie, rating);
+					updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.FilmWeb);
+					callback(true);
 				} else {
-					updateMovieSection(movieNode, null, Movie);
+					updateMovieSection(movieNode, null, Movie, null, opts.FilmWeb);
+					callback(false);
 				}
 
 			},

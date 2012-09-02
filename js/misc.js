@@ -36,7 +36,7 @@ function makeHrefAbsolute(prefix, contentNode) {
 	});
 }
 
-function updateMovieSection(movieNode, content, movie, rating) {
+function updateMovieSection(movieNode, content, movie, rating, intOpts) {
 	if (content == null) {
 		if (movie.year != undefined && movie.year != null) {
 			replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
@@ -44,15 +44,14 @@ function updateMovieSection(movieNode, content, movie, rating) {
 			replaceWith(movieNode, "Can't find '" + movie.title + "'.");
 		}
 	} else {
-		replaceWith(movieNode, $("<div class='moviedesc' rating='" + rating + "'></div>").append(content));
+		replaceWith(movieNode, $("<div></div>").append(content));
 
 		if (rating > 0) {
 
-			if (rating <= parseFloat(opts.Integration.Hide_movies_with_rating_less_than)) {
-				movieNode.parent().hide();
+			if (rating <= parseFloat(intOpts.Hide_movies_with_rating_less_than)) {
+				movieNode.parent().hide(2000);
 			}
-
-			if (rating >= parseFloat(opts.Integration.Mark_movies_with_rating_greater_or_equal_than)) {
+			if (rating >= parseFloat(intOpts.Mark_movies_with_rating_greater_or_equal_than)) {
 				movieNode.css('background-color', '#FFFFAA');
 			}
 		}
@@ -65,27 +64,31 @@ function createCheckbox(id, desc) {
 }
 
 function addEnableDisablePart(anchor) {
-	switchNode = $("<div>" + createCheckbox('enable_filmweb_wito', 'Filmweb') + createCheckbox('enable_imdb_wito', 'Imdb')
-			+ createCheckbox('enable_links_wito', 'Links') + prepateURLToOptions("  [More...]") + "</div>");
+	var switchNode = $("<div></div>");
+	switchNode.append(createCheckbox('enable_filmweb_chb', 'Filmweb'));
+	switchNode.append(createCheckbox('enable_imdb_chb', 'Imdb'));
+	switchNode.append(createCheckbox('enable_links_chb', 'Links'));
+	switchNode.append(prepateURLToOptions("  [More...]"));
+
 	switchNode.insertBefore(anchor);
 
-	chbNode = switchNode.find("input[name='enable_filmweb_wito']");
+	var chbNode = switchNode.find("input[name='enable_filmweb_chb']");
 	chbNode.click(function() {
-		opts.Integration.Integrate_with_Filmweb = $(this).is(':checked');
+		opts.FilmWeb.Integrate_with_FilmWeb = $(this).is(':checked');
 		updateOptions();
 		window.location.reload();
 	});
-	chbNode.attr('checked', opts.Integration.Integrate_with_Filmweb);
+	chbNode.attr('checked', opts.FilmWeb.Integrate_with_FilmWeb);
 
-	chbNode = switchNode.find("input[name='enable_imdb_wito']");
+	chbNode = switchNode.find("input[name='enable_imdb_chb']");
 	chbNode.click(function() {
-		opts.Integration.Integrate_with_IMDB = $(this).is(':checked');
+		opts.IMDB.Integrate_with_IMDB = $(this).is(':checked');
 		updateOptions();
 		window.location.reload();
 	});
-	chbNode.attr('checked', opts.Integration.Integrate_with_IMDB);
+	chbNode.attr('checked', opts.IMDB.Integrate_with_IMDB);
 
-	chbNode = switchNode.find("input[name='enable_links_wito']");
+	chbNode = switchNode.find("input[name='enable_links_chb']");
 	chbNode.click(function() {
 		opts.Links.Add_links = $(this).is(':checked');
 		updateOptions();

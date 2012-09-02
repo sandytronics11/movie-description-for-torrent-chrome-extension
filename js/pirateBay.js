@@ -7,10 +7,10 @@ function augmentPirateBay() {
 		$('iframe').remove();
 	}
 	resultSet = $('#tableHead').children(":first");
-	if (opts.Integration.Integrate_with_Filmweb) {
+	if (opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
-	if (opts.Integration.Integrate_with_IMDB) {
+	if (opts.IMDB.Integrate_with_IMDB) {
 		resultSet.append("<th>" + prepateURLToOptions("IMDB") + "</th>");
 	}
 	if (opts.Links.Add_links) {
@@ -28,10 +28,10 @@ function augmentPirateBay() {
 		var filmwebNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
 		var imdbNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
 		var linksNode = $("<td class=\"row3\" \"></td>");
-		if (opts.Integration.Integrate_with_Filmweb) {
+		if (opts.FilmWeb.Integrate_with_FilmWeb) {
 			$(this).append(filmwebNode);
 		}
-		if (opts.Integration.Integrate_with_IMDB) {
+		if (opts.IMDB.Integrate_with_IMDB) {
 			$(this).append(imdbNode);
 		}
 		if (opts.Links.Add_links) {
@@ -59,21 +59,31 @@ function augmentPirateBay() {
 			}
 		}
 
-		if (opts.Integration.Integrate_with_Filmweb) {
+		if (opts.FilmWeb.Integrate_with_FilmWeb) {
+			var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
+
 			if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {
 					replaceWith(filmwebNode, getAjaxIcon());
-					callFilmweb(filmwebNode, cleanedTitle);
+					callFilmweb(filmwebNode, cleanedTitle, function(found) {
+						if (callIMDBWhenNeeded && !found) {
+							// TODO:
+						}
+					});
 
 				});
 				replaceWith(filmwebNode, node);
 			} else {
-				callFilmweb(filmwebNode, cleanedTitle);
+				callFilmweb(filmwebNode, cleanedTitle, function(found) {
+					if (callIMDBWhenNeeded && !found) {
+						// TODO:
+					}
+				});
 			}
 		}
 
-		if (opts.Integration.Integrate_with_IMDB) {
+		if (opts.IMDB.Integrate_with_IMDB) {
 			if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
 				node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 				node.click(function() {

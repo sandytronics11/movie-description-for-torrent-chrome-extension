@@ -5,10 +5,9 @@ var imdbCache = new MovieCache('imdbCache');
 
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
-	this.quietPeriodMs = 10000;
+	this.quietPeriodMs = 4000;
 	this.content = null;
 	this.saveTimer = null;
-	this.saveLastTimestamp = null;
 }
 
 MovieCache.prototype.log = function(msg) {
@@ -50,22 +49,16 @@ MovieCache.prototype.saveCacheForReal = function() {
 	storage.set(obj);
 };
 
-MovieCache.prototype.turnOnSaveClock = function() {
-	this.saveLastTimestamp = new Date().getTime();
+MovieCache.prototype.save = function() {
+
+	if (this.saveTimer != null) {
+		clearTimeout(this.saveTimer);
+	}
 	var _this = this;
-	this.saveCacheTimer = setTimeout(function() {
+	this.saveTimer = setTimeout(function() {
 		_this.saveCacheForReal();
 	}, this.quietPeriodMs);
-};
-
-MovieCache.prototype.save = function() {
-	if (this.saveLastTimestamp != null) {
-		if (new Date().getTime() - this.saveLastTimestamp < this.quietPeriodMs) {
-			this.log("Not need to update cache yet");
-			clearTimeout(this.saveTimer);
-		}
-	}
-	this.turnOnSaveClock();
+	
 };
 
 MovieCache.prototype.getMovieKey = function(Movie) {
