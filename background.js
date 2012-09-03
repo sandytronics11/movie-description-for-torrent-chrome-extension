@@ -13,7 +13,8 @@ storage.get('opts', function(result) {
 					cancel : true
 				};
 			}, {
-				urls : [ "http://clkads.com/*", "http://www.facebook.com/*", "http://player.vimeo.com/*", "http://www.888poker.com/*" ]
+				urls : [ "http://clkads.com/*", "http://www.facebook.com/*", "http://player.vimeo.com/*", "http://www.888poker.com/*",
+						"http://pl.888.com/*" ]
 			}, [ "blocking" ]);
 
 		}

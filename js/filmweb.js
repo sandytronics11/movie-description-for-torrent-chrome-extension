@@ -1,4 +1,4 @@
-var filmwebUrl = "http://www.filmweb.pl";
+filmwebUrl = "http://www.filmweb.pl";
 
 function getRatingFromFilmWeb(contentNode) {
 	var rating = null;
@@ -21,7 +21,7 @@ function callFilmweb(_movieNode, _movie, callback) {
 		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating, opts.FilmWeb);
 	} else {
 
-		params = {
+		var params = {
 			q : Movie.title
 		};
 		if (Movie.year != undefined && Movie.year != null) {
@@ -37,7 +37,7 @@ function callFilmweb(_movieNode, _movie, callback) {
 				console.log("[FilmWeb] Call to get " + JSON.stringify(Movie) + " with url=" + theUrl);
 			},
 			success : function(data) {
-				contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
+				var contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
 
 				if (!opts.Integration.Display_detailed_informations) {
 					contentNode.find(".searchResultDetails").remove();

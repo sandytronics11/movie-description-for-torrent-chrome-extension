@@ -6,7 +6,7 @@ function augmentPirateBay() {
 		console.log("[MAIN] Removing adds");
 		$('iframe').remove();
 	}
-	resultSet = $('#tableHead').children(":first");
+	var resultSet = $('#tableHead').children(":first");
 	if (opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
@@ -20,7 +20,7 @@ function augmentPirateBay() {
 	console.log("[MAIN] Begin of scanning");
 	$('#searchResult').find("tbody").children().each(function(index) {
 
-		titleNode = $(this).find(" .detName");
+		var titleNode = $(this).find(" .detName");
 		if (titleNode.length == 0) {
 			return;
 		}
@@ -38,7 +38,7 @@ function augmentPirateBay() {
 			$(this).append(linksNode);
 		}
 
-		originalTitle = titleNode.children(":first").html();
+		var originalTitle = titleNode.children(":first").html();
 		console.log("-------");
 		console.log("[MAIN] New title: '" + originalTitle + "'");
 		var cleanedTitle = getCleanTitleGeneric(originalTitle);

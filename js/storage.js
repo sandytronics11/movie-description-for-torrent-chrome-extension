@@ -1,5 +1,4 @@
-var storage = chrome.storage.local;
-var opts;
+storage = chrome.storage.local;
 
 function getDefaultOptions() {
 	return {
@@ -45,7 +44,7 @@ function resetOptions() {
 	});
 }
 
-function updateOptions() {
+function updateOptions(opts) {
 	storage.set({
 		'opts' : opts
 	});

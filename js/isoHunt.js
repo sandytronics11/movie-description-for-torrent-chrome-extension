@@ -1,4 +1,4 @@
-var DELIMITER = "ISOHUNTTHEDELIMITERTHE";
+DELIMITER = "ISOHUNTTHEDELIMITERTHE";
 
 function removeDelimiter(str) {
 	return str.replace(new RegExp(DELIMITER, "gi"), "");
@@ -8,7 +8,7 @@ function getOriginalMovieTitle(htmlNode) {
 	var res = "";
 
 	htmlNode.contents().each(function(index, item) {
-		nodeVal = $(this).text().trim();
+		var nodeVal = $(this).text().trim();
 		if (item.nodeName == "SPAN") {
 			nodeVal = $(this).attr("title");
 		}
@@ -23,14 +23,14 @@ function getOriginalMovieTitle(htmlNode) {
 	return normalize(res);
 }
 
-function getCleanTitleIsohunt(movieTitle) {
-	movieTitle = removeBrackets(movieTitle, true);
+function getCleanTitleIsohunt(_movieTitle) {
+	var movieTitle = removeBrackets(_movieTitle, true);
 
-	what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation",
+	var what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation",
 			"Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure", "Sci\\-Fi",
 			"Tutorial", "Mystery", "Family", "Dance", "War", "western", "horror", "animation", "thriller", "westerns", "action", "pop" ];
 
-	for (i in what) {
+	for (var i in what) {
 		movieTitle = movieTitle.replace(new RegExp("^" + what[i] + DELIMITER, "gi"), "");
 	}
 
@@ -57,7 +57,7 @@ function augmentIsoHunt() {
 		$(document).find("iframe").remove();
 	}
 
-	resultSet = $('#serps').find("tbody").children(":first");
+	var resultSet = $('#serps').find("tbody").children(":first");
 	if (opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
@@ -97,7 +97,7 @@ function augmentIsoHunt() {
 			$(this).append(linksNode);
 		}
 
-		torrentNameNode = $(this).children("td[id^='name']");
+		var torrentNameNode = $(this).children("td[id^='name']");
 		if (torrentNameNode.length == 0) {
 			console.log("There is no torrent name node");
 			return;

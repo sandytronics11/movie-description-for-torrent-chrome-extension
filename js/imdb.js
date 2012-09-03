@@ -1,4 +1,4 @@
-var imdbUrl = "http://www.imdb.com";
+imdbUrl = "http://www.imdb.com";
 
 function getRatingFromIMDB(contentNode) {
 	var rating = null;
@@ -12,7 +12,7 @@ function getRatingFromIMDB(contentNode) {
 }
 
 function removeMetaHtmlAttrs(node, what) {
-	what = [ "id", "itemprop", "itemscope", "itemtype", "onclick"];
+	var what = [ "id", "itemprop", "itemscope", "itemtype", "onclick"];
 	for (i in what) {
 		node.find("*").removeAttr(what[i]);
 	}
@@ -44,13 +44,13 @@ function extractDataFromMoviePage(n, movieId) {
 }
 
 function extractPossibleData(_movieNode, data, movie) {
-	nodeHtml = "<div>";
-	mainNode = $(data).find("#main");
+	var nodeHtml = "<div>";
+	var mainNode = $(data).find("#main");
 	mainNode.find(".show-hide").remove();
 
-	possibleMovies = new Array();
+	var possibleMovies = new Array();
 	mainNode.find("table").each(function() {
-		titleTitle = $(this).prev().text().trim();
+		var titleTitle = $(this).prev().text().trim();
 		if (titleTitle.length == 0) {
 			return;
 		}
@@ -59,19 +59,19 @@ function extractPossibleData(_movieNode, data, movie) {
 		titleTitle = titleTitle.replace(new RegExp("Displaying.+?(Results|Result)", "gi"), "");
 
 		titleTitle = titleTitle.trim();
-		wrongSections = [ "Keywords Approx Matches", "Companies Approx Matches", "Names Approx Matches" ];
+		var wrongSections = [ "Keywords Approx Matches", "Companies Approx Matches", "Names Approx Matches" ];
 		if (containsAny(titleTitle, wrongSections)) {
 			return;
 		}
 
-		isHeaderAdded = false;
-		tds = $(this).find("tbody > tr > td:nth-child(3)");
-		total = 0;
+		var isHeaderAdded = false;
+		var tds = $(this).find("tbody > tr > td:nth-child(3)");
+		var total = 0;
 		tds.each(function() {
 			if (total > 3) {
 				return;
 			}
-			n = $(this);
+			var n = $(this);
 			n.find("a").removeAttr("onclick");
 			n.find("br,img").remove();
 			n.find("a:empty").remove();
@@ -80,13 +80,13 @@ function extractPossibleData(_movieNode, data, movie) {
 				$(this).replaceWith("<div>" + $(this).text() + "</div>");
 			});
 
-			year = n.contents().filter(function() {
+			var year = n.contents().filter(function() {
 				return this.nodeType == Node.TEXT_NODE;
 			}).text();
 
 			year = year + " " + n.find("small").text();
 
-			wrongTypes = [ "TV", "VG", "TV series" ];
+			var wrongTypes = [ "TV", "VG", "TV series" ];
 			if (containsAny(year, wrongTypes)) {
 				return;
 			}
@@ -99,7 +99,7 @@ function extractPossibleData(_movieNode, data, movie) {
 				nodeHtml = nodeHtml + "<div><h3>" + titleTitle + "</h3><ul>";
 				isHeaderAdded = true;
 			}
-			total = total + 1;
+			total++;
 			possibleMovies.push(n.find("a[href^='/title/tt']").attr("href"));
 			nodeHtml = nodeHtml + "<li>" + n.html().trim() + "</li>";
 		});
@@ -119,7 +119,7 @@ function extractPossibleData(_movieNode, data, movie) {
 		return null;
 	}
 
-	contentNode = $(nodeHtml);
+	var contentNode = $(nodeHtml);
 	makeHrefAbsolute(imdbUrl, contentNode);
 	return contentNode;
 }
@@ -137,7 +137,7 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 			console.log("[IMDB] callImdbForMovie with url=" + theUrl);
 		},
 		success : function(data) {
-			contentNode = $(data).find("#overview-top");
+			var contentNode = $(data).find("#overview-top");
 			contentNode = extractDataFromMoviePage(contentNode, movieId);
 			
 			var rating = getRatingFromIMDB(contentNode);
@@ -157,7 +157,7 @@ function callImdbForAnything(_movieNode, _movie) {
 	var movieNode = _movieNode;
 	var Movie = _movie;
 
-	params = {
+	var params = {
 		s : Movie.title
 	};
 
@@ -175,7 +175,7 @@ function callImdbForAnything(_movieNode, _movie) {
 			console.log("[IMDB] callImdbForAnything " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
-			contentNode = extractPossibleData(movieNode, data, Movie);
+			var contentNode = extractPossibleData(movieNode, data, Movie);
 			if (contentNode != null) {
 				var rating = getRatingFromIMDB(contentNode);
 				contentNode.find("*").removeAttr("class");
@@ -193,7 +193,7 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 
 	var movieNode = _movieNode;
 	var Movie = _movie;
-	params = {
+	var params = {
 		title : Movie.title,
 		title_type : "feature"
 	};
@@ -206,23 +206,23 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 			console.log("[IMDB] callImdbForSpecialTitle " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
-			content = $(data).find("#main").find("table").find(".title");
+			var content = $(data).find("#main").find("table").find(".title");
 			if (content.length == 0) {
 				callImdbForAnything(movieNode, Movie);
 			} else {
 
-				movieId = null;
+				var movieId = null;
 				content.each(function() {
 					if (movieId != null) {
 						return;
 					}
-					linkNode = $(this).find("a[href^='/title/tt']");
+					var linkNode = $(this).find("a[href^='/title/tt']");
 
 					if (Movie.year == null) {
 						movieId = linkNode.attr("href");
 					} else {
-						yearNode = $(this).find(".year_type");
-						year = removeOnlyBrackets(yearNode.text());
+						var yearNode = $(this).find(".year_type");
+						var year = removeOnlyBrackets(yearNode.text());
 						if (year.indexOf(Movie.year) >= 0) {
 							movieId = linkNode.attr("href");
 						}
@@ -245,7 +245,7 @@ function callImdbForFirstHit(_movieNode, _movie) {
 	var movieNode = _movieNode;
 	var Movie = _movie;
 
-	params = {
+	var params = {
 		s : Movie.title
 	};
 
@@ -263,7 +263,7 @@ function callImdbForFirstHit(_movieNode, _movie) {
 			console.log("[IMDB] callImdbForFirstHit: " + JSON.stringify(Movie) + " with url=" + theUrl);
 		},
 		success : function(data) {
-			contentNode = $(data).find("#overview-top");
+			var contentNode = $(data).find("#overview-top");
 			if (contentNode.length > 0) {
 				contentNode = extractDataFromMoviePage(contentNode, "need_to_fix_this");
 				var rating = getRatingFromIMDB(contentNode);

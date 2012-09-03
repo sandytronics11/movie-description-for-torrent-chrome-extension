@@ -1,7 +1,7 @@
-var storage = chrome.storage.local;
+storage = chrome.storage.local;
 
-var filmwebCache = new MovieCache('filmwebCache');
-var imdbCache = new MovieCache('imdbCache');
+filmwebCache = new MovieCache('filmwebCache');
+imdbCache = new MovieCache('imdbCache');
 
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
@@ -50,7 +50,6 @@ MovieCache.prototype.saveCacheForReal = function() {
 };
 
 MovieCache.prototype.save = function() {
-
 	if (this.saveTimer != null) {
 		clearTimeout(this.saveTimer);
 	}
@@ -58,7 +57,7 @@ MovieCache.prototype.save = function() {
 	this.saveTimer = setTimeout(function() {
 		_this.saveCacheForReal();
 	}, this.quietPeriodMs);
-	
+
 };
 
 MovieCache.prototype.getMovieKey = function(Movie) {
@@ -66,8 +65,8 @@ MovieCache.prototype.getMovieKey = function(Movie) {
 };
 
 MovieCache.prototype.addMovie = function(Movie, _content, _rating) {
-	key = this.getMovieKey(Movie);
-	ts = new Date().getTime();
+	var key = this.getMovieKey(Movie);
+	var ts = new Date().getTime();
 	this.log("Adding movie " + key + " to the cache with timestamp " + ts);
 
 	this.content[key] = {
@@ -79,7 +78,7 @@ MovieCache.prototype.addMovie = function(Movie, _content, _rating) {
 };
 
 MovieCache.prototype.isTsOlderThanNHours = function(timestamp, hours) {
-	del = new Date().getTime() - timestamp;
+	var del = new Date().getTime() - timestamp;
 	del = del / 1000; // secs
 	del = del / 1000; // mins
 	del = del / 1000; // hours
@@ -102,9 +101,9 @@ MovieCache.prototype.removesMoviesOlderThan = function(hours) {
 };
 
 MovieCache.prototype.getFromCache = function(Movie) {
-	key = this.getMovieKey(Movie);
-	cm = this.content[key];
-	if (cm != undefined) {		
+	var key = this.getMovieKey(Movie);
+	var cm = this.content[key];
+	if (cm != undefined) {
 		this.log("Cache hit for " + key);
 	}
 	return cm;

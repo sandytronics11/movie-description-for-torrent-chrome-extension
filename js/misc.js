@@ -1,7 +1,7 @@
 function callFilmwebImpl(filmwebNode, cleanedTitle) {
 	var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
 	if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
-		node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
+		var node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 		node.click(function() {
 			replaceWith(filmwebNode, getAjaxIcon());
 			callFilmweb(filmwebNode, cleanedTitle, function(found) {
@@ -51,7 +51,7 @@ function removeOnlyBrackets(str) {
 }
 
 function containsAny(str, patterns) {
-	for (i in patterns) {
+	for (var i in patterns) {
 		if (str.indexOf(patterns[i]) >= 0) {
 			return true;
 		}
@@ -65,7 +65,7 @@ function removeNewLines(str) {
 
 function makeHrefAbsolute(prefix, contentNode) {
 	contentNode.find("a[href]").each(function() {
-		i = this.href.indexOf("/");
+		var i = this.href.indexOf("/");
 		i = this.href.indexOf("/", i + 1);
 		i = this.href.indexOf("/", i + 1);
 		this.href = prefix + this.href.substring(i);
@@ -111,7 +111,7 @@ function addEnableDisablePart(anchor) {
 	var chbNode = switchNode.find("input[name='enable_filmweb_chb']");
 	chbNode.click(function() {
 		opts.FilmWeb.Integrate_with_FilmWeb = $(this).is(':checked');
-		updateOptions();
+		updateOptions(opts);
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.FilmWeb.Integrate_with_FilmWeb);
@@ -119,7 +119,7 @@ function addEnableDisablePart(anchor) {
 	chbNode = switchNode.find("input[name='enable_imdb_chb']");
 	chbNode.click(function() {
 		opts.IMDB.Integrate_with_IMDB = $(this).is(':checked');
-		updateOptions();
+		updateOptions(opts);
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.IMDB.Integrate_with_IMDB);
@@ -127,7 +127,7 @@ function addEnableDisablePart(anchor) {
 	chbNode = switchNode.find("input[name='enable_links_chb']");
 	chbNode.click(function() {
 		opts.Links.Add_links = $(this).is(':checked');
-		updateOptions();
+		updateOptions(opts);
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Links.Add_links);
@@ -135,12 +135,12 @@ function addEnableDisablePart(anchor) {
 }
 
 function prepateURLToOptions(title) {
-	href = chrome.extension.getURL("options.html");
+	var href = chrome.extension.getURL("options.html");
 	return "<a href=\"" + href + "\" target=_blank>" + title + "</a>";
 }
 
 function getAjaxIcon() {
-	imgUrl = chrome.extension.getURL("ajax_loading_small.gif");
+	var imgUrl = chrome.extension.getURL("ajax_loading_small.gif");
 	return "<img src=\"" + imgUrl + "\" /></td>";
 }
 
@@ -153,9 +153,9 @@ function normalize(str) {
 }
 
 function removeBrackets(str, leadingOnly) {
-	brackets = [ "\\[.+?\\]", "\\(.+?\\)", "\\{.+?\\}", "\\*\\*.+?\\*\\*" ];
-	for (i in brackets) {
-		regexpr = null;
+	var brackets = [ "\\[.+?\\]", "\\(.+?\\)", "\\{.+?\\}", "\\*\\*.+?\\*\\*" ];
+	for (var i in brackets) {
+		var regexpr = null;
 		if (leadingOnly) {
 			regexpr = new RegExp("^" + brackets[i], "gi");
 		} else {
@@ -167,7 +167,7 @@ function removeBrackets(str, leadingOnly) {
 }
 
 function getFirstYear(str) {
-	tmp = str.match(new RegExp("[1-2][0-9][0-9][0-9]", "gi"));
+	var tmp = str.match(new RegExp("[1-2][0-9][0-9][0-9]", "gi"));
 	if (tmp != null && tmp.length > 0) {
 		return tmp[0];
 	}
@@ -176,13 +176,13 @@ function getFirstYear(str) {
 
 function getCleanTitleGeneric(originalTitle) {
 
-	movieYear = null;
-	possibleMovieTitle = false;
-	filmNameClean = removeBrackets(originalTitle, true);
-	year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{\\_][1-2][0-9][0-9][0-9]([\\)\\]\\ \\.\\,\\*\\}\\[\\-\\_\\(]|$)", "gi"));
+	var movieYear = null;
+	var possibleMovieTitle = false;
+	var filmNameClean = removeBrackets(originalTitle, true);
+	var year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{\\_][1-2][0-9][0-9][0-9]([\\)\\]\\ \\.\\,\\*\\}\\[\\-\\_\\(]|$)", "gi"));
 	if (year != null && year.length > 0) {
 		movieYear = getFirstYear(year[0]);
-		i = filmNameClean.indexOf(year[0]);
+		var i = filmNameClean.indexOf(year[0]);
 		console.log(" found year of the movie " + movieYear);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
@@ -195,10 +195,10 @@ function getCleanTitleGeneric(originalTitle) {
 
 	console.log(" after removing everything inside brackets '" + filmNameClean + "'");
 	//
-	special = filmNameClean
+	var special = filmNameClean
 			.match(new RegExp("\\.mpg|\\.avi|TOPSIDER|KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|AC3|UNRATED|720p", "gi"));
 	if (special != null && special.length > 0) {
-		i = filmNameClean.indexOf(special[0]);
+		var i = filmNameClean.indexOf(special[0]);
 		filmNameClean = filmNameClean.substring(0, i);
 		possibleMovieTitle = true;
 	}
@@ -219,10 +219,10 @@ function getCleanTitleGeneric(originalTitle) {
 		};
 	}
 
-	ttr = [ "XDM", "AAC", "HD", "CAM", "DVDScrRip", "Dvdscr", "Rip", "1CD", "2CD", "MP3", "x264 5.1", "x264", "dvd5", "DVDRip", "RRG",
+	var ttr = [ "XDM", "AAC", "HD", "CAM", "DVDScrRip", "Dvdscr", "Rip", "1CD", "2CD", "MP3", "x264 5.1", "x264", "dvd5", "DVDRip", "RRG",
 			"Xvid", "ICTV", "NL subs", "IPS", "Rel -", "\\*", "720p", "Hindi", "-", "BRRip", "\\(Rel \\)", "\\( Rel \\)", "\\( \\)",
 			"\\(\\)" ];
-	for (i in ttr) {
+	for (var i in ttr) {
 		filmNameClean = filmNameClean.replace(new RegExp(ttr[i], "gi"), "");
 	}
 
@@ -242,7 +242,7 @@ function getCleanTitleGeneric(originalTitle) {
 
 function getLinksColumn(param) {
 
-	node = $("<p></p>");
+	var node = $("<p></p>");
 	if (opts.Links.Add_Google_Search_link) {
 		node.append("<a href='https://www.google.pl/search?" + $.param({
 			q : param.title
@@ -264,7 +264,7 @@ function getLinksColumn(param) {
 		node.append("<br/>");
 	}
 	if (opts.Links.Add_IMDB_link) {
-		yearInfo = "";
+		var yearInfo = "";
 		if (param.year != null) {
 			yearInfo = " (" + param.year + ")";
 		}
