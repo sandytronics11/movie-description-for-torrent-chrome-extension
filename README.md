@@ -1,4 +1,4 @@
-Movie Description for Torrent Chrome Extension v0.2.3
+Movie Description for Torrent Chrome Extension v0.2.4
 =============================
 
 Google Chrome Extension for torrent sites with following features:
@@ -9,6 +9,7 @@ Google Chrome Extension for torrent sites with following features:
 4. Hides films with low rating not to be visible to the user 
 5. Adds additional column to search results with links to:  Google search, Google graphic, Filmweb, Imdb search for the original torrent title or movie title
 6. Removes adds
+7. Movie blacklist
 
 To install:
 
@@ -21,4 +22,3 @@ To install:
 TODO:
 
 1. fix problems with urls in imdb descr box
-2. functionality to mark movie as watched not to show again

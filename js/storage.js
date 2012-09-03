@@ -23,7 +23,7 @@ function getDefaultOptions() {
 			Fallback_to_IMDB_when_cant_find_movie : true,
 			Mark_movies_with_rating_greater_or_equal_than : "7.0",
 			Hide_movies_with_rating_less_than : "6.1",
-			Expire_cache_after_hours : "48"			
+			Expire_cache_after_hours : "48"
 		},
 		Links : {
 			Add_links : true,
@@ -39,13 +39,30 @@ function getDefaultOptions() {
 
 function resetOptions() {
 	storage.remove('opts');
-	storage.set({
-		'opts' : getDefaultOptions()
-	});
+	updateOptions(getDefaultOptions());
 }
 
 function updateOptions(opts) {
 	storage.set({
 		'opts' : opts
+	});
+}
+
+// Movie blacklist
+
+function getDefaultMblacklist() {
+	return {
+		movies : []
+	};
+}
+
+function resetMblacklist() {
+	storage.remove('mblacklist');
+	updateBlacklist(getDefaultMblacklist());
+}
+
+function updateBlacklist(mblacklist) {
+	storage.set({
+		'mblacklist' : mblacklist
 	});
 }
