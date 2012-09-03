@@ -1,36 +1,48 @@
-function callFilmwebImpl(filmwebNode, cleanedTitle) {
+function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
+	if (opts.Links.Use_torrent_title_as_query_param) {
+		htmlNode.append(getLinksColumn({
+			title : removeDelimiter(originalTitle),
+			year : null
+		}));
+	}
+	if (opts.Links.Use_movie_title_as_query_param) {
+		htmlNode.append(getLinksColumn(cleanedTitle));
+	}
+}
+
+function addFilmwebCell(htmlNode, cleanedTitle) {
 	var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
 	if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
 		var node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 		node.click(function() {
-			replaceWith(filmwebNode, getAjaxIcon());
-			callFilmweb(filmwebNode, cleanedTitle, function(found) {
+			replaceWith(htmlNode, getAjaxIcon());
+			callFilmweb(htmlNode, cleanedTitle, function(found) {
 				if (callIMDBWhenNeeded && !found) {
-					callIMDBImpl(filmwebNode, cleanedTitle);
+					addIMDBCell(htmlNode, cleanedTitle);
 				}
 			});
 
 		});
-		replaceWith(filmwebNode, node);
+		replaceWith(htmlNode, node);
 	} else {
-		callFilmweb(filmwebNode, cleanedTitle, function(found) {
+		callFilmweb(htmlNode, cleanedTitle, function(found) {
 			if (callIMDBWhenNeeded && !found) {
-				callIMDBImpl(filmwebNode, cleanedTitle);
+				addIMDBCell(htmlNode, cleanedTitle);
 			}
 		});
 	}
 }
 
-function callIMDBImpl(imdbNode, cleanedTitle) {
+function addIMDBCell(htmlNode, cleanedTitle) {
 	if (cleanedTitle.not_sure && imdbCache.getFromCache(cleanedTitle) == undefined) {
 		var node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 		node.click(function() {
-			replaceWith(imdbNode, getAjaxIcon());
-			callImdb(imdbNode, cleanedTitle);
+			replaceWith(htmlNode, getAjaxIcon());
+			callImdb(htmlNode, cleanedTitle);
 		});
-		replaceWith(imdbNode, node);
+		replaceWith(htmlNode, node);
 	} else {
-		callImdb(imdbNode, cleanedTitle);
+		callImdb(htmlNode, cleanedTitle);
 	}
 }
 
@@ -51,7 +63,7 @@ function removeOnlyBrackets(str) {
 }
 
 function containsAny(str, patterns) {
-	for (var i in patterns) {
+	for ( var i in patterns) {
 		if (str.indexOf(patterns[i]) >= 0) {
 			return true;
 		}
@@ -99,14 +111,12 @@ function createCheckbox(id, desc) {
 	return "<input name='" + id + "' type='checkbox'>" + desc + "</input>";
 }
 
-function addEnableDisablePart(anchor) {
+function getOptionsBreadcrumbs() {
 	var switchNode = $("<div></div>");
 	switchNode.append(createCheckbox('enable_filmweb_chb', 'Filmweb'));
 	switchNode.append(createCheckbox('enable_imdb_chb', 'Imdb'));
 	switchNode.append(createCheckbox('enable_links_chb', 'Links'));
 	switchNode.append(prepateURLToOptions("  [More...]"));
-
-	switchNode.insertBefore(anchor);
 
 	var chbNode = switchNode.find("input[name='enable_filmweb_chb']");
 	chbNode.click(function() {
@@ -131,6 +141,8 @@ function addEnableDisablePart(anchor) {
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Links.Add_links);
+	
+	return switchNode;
 
 }
 
@@ -154,7 +166,7 @@ function normalize(str) {
 
 function removeBrackets(str, leadingOnly) {
 	var brackets = [ "\\[.+?\\]", "\\(.+?\\)", "\\{.+?\\}", "\\*\\*.+?\\*\\*" ];
-	for (var i in brackets) {
+	for ( var i in brackets) {
 		var regexpr = null;
 		if (leadingOnly) {
 			regexpr = new RegExp("^" + brackets[i], "gi");
@@ -179,7 +191,8 @@ function getCleanTitleGeneric(originalTitle) {
 	var movieYear = null;
 	var possibleMovieTitle = false;
 	var filmNameClean = removeBrackets(originalTitle, true);
-	var year = filmNameClean.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{\\_][1-2][0-9][0-9][0-9]([\\)\\]\\ \\.\\,\\*\\}\\[\\-\\_\\(]|$)", "gi"));
+	var year = filmNameClean
+			.match(new RegExp("[\\(\\[\\ \\.\\*\\-\\{\\_][1-2][0-9][0-9][0-9]([\\)\\]\\ \\.\\,\\*\\}\\[\\-\\_\\(]|$)", "gi"));
 	if (year != null && year.length > 0) {
 		movieYear = getFirstYear(year[0]);
 		var i = filmNameClean.indexOf(year[0]);
@@ -195,8 +208,8 @@ function getCleanTitleGeneric(originalTitle) {
 
 	console.log(" after removing everything inside brackets '" + filmNameClean + "'");
 	//
-	var special = filmNameClean
-			.match(new RegExp("\\.mpg|\\.avi|TOPSIDER|KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|AC3|UNRATED|720p", "gi"));
+	var special = filmNameClean.match(new RegExp("\\.mpg|\\.avi|TOPSIDER|KLAXXON|LIMITED|HDTV|SWEDISH|SWESUB|BDRIP|DVD|AC3|UNRATED|720p",
+			"gi"));
 	if (special != null && special.length > 0) {
 		var i = filmNameClean.indexOf(special[0]);
 		filmNameClean = filmNameClean.substring(0, i);
@@ -222,7 +235,7 @@ function getCleanTitleGeneric(originalTitle) {
 	var ttr = [ "XDM", "AAC", "HD", "CAM", "DVDScrRip", "Dvdscr", "Rip", "1CD", "2CD", "MP3", "x264 5.1", "x264", "dvd5", "DVDRip", "RRG",
 			"Xvid", "ICTV", "NL subs", "IPS", "Rel -", "\\*", "720p", "Hindi", "-", "BRRip", "\\(Rel \\)", "\\( Rel \\)", "\\( \\)",
 			"\\(\\)" ];
-	for (var i in ttr) {
+	for ( var i in ttr) {
 		filmNameClean = filmNameClean.replace(new RegExp(ttr[i], "gi"), "");
 	}
 

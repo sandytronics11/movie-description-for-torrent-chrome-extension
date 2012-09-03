@@ -42,8 +42,8 @@ function getCleanTitleIsohunt(_movieTitle) {
 }
 
 function augmentIsoHunt() {
-
-	addEnableDisablePart('#serps');
+	
+	getOptionsBreadcrumbs().insertBefore('#serps');
 
 	if (!opts.General.Integrate_with_IsoHunt) {
 		return;
@@ -84,19 +84,6 @@ function augmentIsoHunt() {
 			return;
 		}
 
-		var filmwebNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
-		var imdbNode = $("<td class=\"row3\" \">" + getAjaxIcon() + "</td>");
-		var linksNode = $("<td class=\"row3\" \"></td>");
-		if (opts.FilmWeb.Integrate_with_FilmWeb) {
-			$(this).append(filmwebNode);
-		}
-		if (opts.IMDB.Integrate_with_IMDB) {
-			$(this).append(imdbNode);
-		}
-		if (opts.Links.Add_links) {
-			$(this).append(linksNode);
-		}
-
 		var torrentNameNode = $(this).children("td[id^='name']");
 		if (torrentNameNode.length == 0) {
 			console.log("There is no torrent name node");
@@ -115,26 +102,24 @@ function augmentIsoHunt() {
 		console.log("[MAIN] New title: '" + removeDelimiter(originalTitle) + "'");
 		var cleanedTitle = getCleanTitleIsohunt(originalTitle);
 		if (cleanedTitle == null) {
-			console.error("Torrent title is empty");
+			console.error("Torrent title is empty - looks like layout problem");
 			return;
 		}
 
-		if (opts.Links.Add_links) {
-			if (opts.Links.Use_torrent_title_as_query_param) {
-				linksNode.append(getLinksColumn({
-					title : removeDelimiter(originalTitle),
-					year : null
-				}));
-			}
-			if (opts.Links.Use_movie_title_as_query_param) {
-				linksNode.append(getLinksColumn(cleanedTitle));
-			}
-		}
 		if (opts.FilmWeb.Integrate_with_FilmWeb) {
-			callFilmwebImpl(filmwebNode, cleanedTitle);
+			var filmwebNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
+			$(this).append(filmwebNode);
+			addFilmwebCell(filmwebNode, cleanedTitle);
 		}
 		if (opts.IMDB.Integrate_with_IMDB) {
-			callIMDBImpl(imdbNode, cleanedTitle);
+			var imdbNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
+			$(this).append(imdbNode);
+			addIMDBCell(imdbNode, cleanedTitle);
+		}
+		if (opts.Links.Add_links) {
+			var linksNode = $("<td class=\"row3\"></td>");
+			$(this).append(linksNode);
+			addLinksCell(linksNode, originalTitle, cleanedTitle);
 		}
 	});
 	console.log("[MAIN] End of scanning");
