@@ -8,6 +8,26 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 	if (opts.Links.Use_movie_title_as_query_param) {
 		htmlNode.append(getLinksColumn(cleanedTitle));
 	}
+
+	var tk = cleanedTitle.title;
+	if (cleanedTitle.year != null) {
+		tk = tk + " of year " + cleanedTitle.year;
+	}
+
+	if (isBlacklisted(tk)) {
+		console.log("movie " + originalTitle + " is blacklisted");
+		htmlNode.parent().hide('1000');
+		return;
+	}
+
+	var blackListNode = $("<button name='name'>[hide]</button>");
+	blackListNode.click(function() {
+		addToBlackList(tk);
+		htmlNode.parent().hide('1000');
+	});
+
+	htmlNode.append("<br/>");
+	htmlNode.append(blackListNode);
 }
 
 function addFilmwebCell(htmlNode, cleanedTitle) {
@@ -141,7 +161,7 @@ function getOptionsBreadcrumbs() {
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Links.Add_links);
-	
+
 	return switchNode;
 
 }

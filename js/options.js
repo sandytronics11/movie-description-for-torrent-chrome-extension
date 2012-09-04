@@ -47,22 +47,3 @@ function updateOptions(opts) {
 		'opts' : opts
 	});
 }
-
-// Movie blacklist
-
-function getDefaultMblacklist() {
-	return {
-		movies : []
-	};
-}
-
-function resetMblacklist() {
-	storage.remove('mblacklist');
-	updateBlacklist(getDefaultMblacklist());
-}
-
-function updateBlacklist(mblacklist) {
-	storage.set({
-		'mblacklist' : mblacklist
-	});
-}

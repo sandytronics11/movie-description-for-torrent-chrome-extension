@@ -1,30 +1,35 @@
 <html>
 <head>
-<title>Movie Description for Torrent Chrome Extension Config</title>
+<title>Movie blacklist</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script src="lib/jquery.min-1.7.2.js"></script>
 
 <script src="js/options.js"></script>
+<script src="js/blacklist.js"></script>
 <script src="js/cache.js"></script>
 <script src="ui/options.js"></script>
+<script src="ui/blacklist.js"></script>
+
 <link href="ui/style.css" rel="stylesheet" type="text/css"
 	media="screen">
+
 </head>
 
 <body>
 
-	<h1>Movie Description for Torrent Chrome Extension Config Page</h1>
-	<a href="blacklist.html">Go to: Movie blacklist</a>
+	<h1>Movie blacklist</h1>
+	<a href="options.html">Go to: Options</a>
 	<hr />
 
-	<button id="saveOptions">Save</button>
-	<button id="resetOptions">Reset</button>
-	<button id="cleanCache">Clean Cache</button>
-	<div id="body"></div>
+	<button id="save">Save changes</button>
+	<button id="discard">Discard changes</button>
+	<button id="resurrectAll">Resurrect all</button>
+	<br />
+	<br />
+	<div id="blacklist_anch"></div>
 
 	<hr />
 	EOF
-
 </body>
 
 </html>

@@ -122,5 +122,6 @@ function augmentIsoHunt() {
 			addLinksCell(linksNode, originalTitle, cleanedTitle);
 		}
 	});
+	
 	console.log("[MAIN] End of scanning");
 }
