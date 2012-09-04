@@ -8,8 +8,8 @@ Google Chrome Extension for torrent sites with following features:
 3. Marks films with high rating to be better visible to the user
 4. Hides films with low rating not to be visible to the user 
 5. Adds additional column to search results with links to:  Google search, Google graphic, Filmweb, Imdb search for the original torrent title or movie title
-6. Removes adds
-7. Movie blacklist
+6. Keeps track and hides unwanted movies
+7. Removes adds
 
 To install:
 

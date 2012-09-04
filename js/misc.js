@@ -11,7 +11,7 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 
 	var tk = cleanedTitle.title;
 	if (cleanedTitle.year != null) {
-		tk = tk + " of year " + cleanedTitle.year;
+		tk = tk + " (" + cleanedTitle.year + ")";
 	}
 
 	if (isBlacklisted(tk)) {

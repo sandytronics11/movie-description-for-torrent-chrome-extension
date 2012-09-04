@@ -44,6 +44,7 @@ $(document).ready(function() {
 			mblacklist = getDefaultMblackList();
 		} else {
 			mblacklist = result.mblacklist;
+			mblacklist.movies.sort();
 		}
 
 		console.log("mblacklist = " + JSON.stringify(mblacklist));
@@ -61,6 +62,7 @@ $(document).ready(function() {
 					mblacklist = getDefaultMblackList();
 				} else {
 					mblacklist = result.mblacklist;
+					mblacklist.movies.sort();
 				}
 				buildHtmlBl();
 			});
