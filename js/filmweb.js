@@ -12,10 +12,8 @@ function getRatingFromFilmWeb(contentNode) {
 	return rating;
 }
 
-function callFilmweb(_movieNode, _movie, callback) {
+function callFilmweb(movieNode, Movie, callback) {
 
-	var movieNode = _movieNode;
-	var Movie = _movie;
 	var cachedMovie = filmwebCache.getFromCache(Movie);
 	if (cachedMovie != undefined) {
 		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating, opts.FilmWeb);

@@ -124,12 +124,9 @@ function extractPossibleData(_movieNode, data, movie) {
 	return contentNode;
 }
 
-function callImdbForMovie(_movieNode, _movie, _movieId) {
+function callImdbForMovie(movieNode, Movie, movieId) {
 
-	var Movie = _movie;
-	var movieNode = _movieNode;
-	var theUrl = imdbUrl + _movieId;
-	var movieId = _movieId;
+	var theUrl = imdbUrl + movieId;
 
 	callAjax("callImdbForMovie", {
 		url : theUrl,
@@ -153,9 +150,7 @@ function callImdbForMovie(_movieNode, _movie, _movieId) {
 
 }
 
-function callImdbForAnything(_movieNode, _movie) {
-	var movieNode = _movieNode;
-	var Movie = _movie;
+function callImdbForAnything(movieNode, Movie) {
 
 	var params = {
 		s : Movie.title
@@ -189,10 +184,8 @@ function callImdbForAnything(_movieNode, _movie) {
 	});
 }
 
-function callImdbForSpecialTitle(_movieNode, _movie) {
+function callImdbForSpecialTitle(movieNode, Movie) {
 
-	var movieNode = _movieNode;
-	var Movie = _movie;
 	var params = {
 		title : Movie.title,
 		title_type : "feature"
@@ -241,9 +234,7 @@ function callImdbForSpecialTitle(_movieNode, _movie) {
 	});
 }
 
-function callImdbForFirstHit(_movieNode, _movie) {
-	var movieNode = _movieNode;
-	var Movie = _movie;
+function callImdbForFirstHit(movieNode, Movie) {
 
 	var params = {
 		s : Movie.title
