@@ -43,11 +43,12 @@ function getCleanTitleIsohunt(_movieTitle) {
 
 function augmentIsoHunt() {
 	
-	getOptionsBreadcrumbs().insertBefore('#serps');
-
 	if (!opts.General.Integrate_with_IsoHunt) {
+		console.log("not integrated - skipping");
 		return;
 	}
+	
+	getOptionsBreadcrumbs().insertBefore('#serps');
 
 	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("[MAIN] Removing adds");
@@ -103,6 +104,12 @@ function augmentIsoHunt() {
 		var cleanedTitle = getCleanTitleIsohunt(originalTitle);
 		if (cleanedTitle == null) {
 			console.error("Torrent title is empty - looks like layout problem");
+			return;
+		}
+		
+		if (isMovieAlreadyBlacklisted(cleanedTitle)) {
+			console.log("movie '" + cleanedTitle.title + "' is blacklisted");
+			$(this).hide('1000');
 			return;
 		}
 

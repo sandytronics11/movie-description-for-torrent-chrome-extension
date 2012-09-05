@@ -1,4 +1,9 @@
 function augmentPirateBay() {
+	
+	if (!opts.General.Integrate_with_PirateBay) {
+		console.log("not integrated - skipping");
+		return;
+	}
 
 	getOptionsBreadcrumbs().insertBefore('#searchResult');
 
@@ -34,6 +39,12 @@ function augmentPirateBay() {
 			return;
 		}
 
+		if (isMovieAlreadyBlacklisted(cleanedTitle)) {
+			console.log("movie '" + cleanedTitle.title + "' is blacklisted");
+			$(this).hide('1000');
+			return;
+		}
+		
 		if (opts.FilmWeb.Integrate_with_FilmWeb) {
 			var filmwebNode = $("<td>" + getAjaxIcon() + "</td>");
 			$(this).append(filmwebNode);

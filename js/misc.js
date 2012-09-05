@@ -1,3 +1,11 @@
+function isMovieAlreadyBlacklisted(cleanedTitle) {
+	var tk = cleanedTitle.title;
+	if (cleanedTitle.year != null) {
+		tk = tk + " (" + cleanedTitle.year + ")";
+	}
+	return isBlacklisted(tk);
+}
+
 function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 	if (opts.Links.Use_torrent_title_as_query_param) {
 		htmlNode.append(getLinksColumn({
@@ -9,25 +17,21 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 		htmlNode.append(getLinksColumn(cleanedTitle));
 	}
 
-	var tk = cleanedTitle.title;
-	if (cleanedTitle.year != null) {
-		tk = tk + " (" + cleanedTitle.year + ")";
+	if (opts.Links.Add_hide_movie_link) {
+		var tk = cleanedTitle.title;
+		if (cleanedTitle.year != null) {
+			tk = tk + " (" + cleanedTitle.year + ")";
+		}
+
+		var blackListNode = $("<button name='name'>[hide]</button>");
+		blackListNode.click(function() {
+			addToBlackList(tk);
+			htmlNode.parent().hide('1000');
+		});
+
+		htmlNode.append("<br/>");
+		htmlNode.append(blackListNode);
 	}
-
-	if (isBlacklisted(tk)) {
-		console.log("movie " + originalTitle + " is blacklisted");
-		htmlNode.parent().hide('1000');
-		return;
-	}
-
-	var blackListNode = $("<button name='name'>[hide]</button>");
-	blackListNode.click(function() {
-		addToBlackList(tk);
-		htmlNode.parent().hide('1000');
-	});
-
-	htmlNode.append("<br/>");
-	htmlNode.append(blackListNode);
 }
 
 function addFilmwebCell(htmlNode, cleanedTitle) {
