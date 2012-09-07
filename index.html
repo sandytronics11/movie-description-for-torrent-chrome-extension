@@ -33,7 +33,7 @@
       <header>
         <h1>Movie Description for Torrent Chrome Extension</h1>
         <p>Chrome extension to Pirate Bay &amp; Iso Hunt that integrates IMDB and/or FilmWeb description and movie ratings into torrent search results.</p>
-		<p><small>Last update: 2012-09-05</small></p>
+		<p><small>Last update: 2012-09-07, Current version: 0.2.4</small></p>
       </header>
 
       <div id="banner">
@@ -55,23 +55,33 @@
       </nav>	    
       <section>
 	  
-<h1>Description</h1>
+<h1>Use Cases</h1>
 
-Chrome extension to Pirate Bay &amp; Iso Hunt that integrates IMDB and/or FilmWeb description and movie ratings into torrent search results.
+<strong>Below I present the use cases and the features of the plugin. All those features can be enabled/disabled separately from each other, on demand, whenever you need it.</strong>
 
-<h1>Features</h1>
+<hr/>
 
 <ol>
+<li><h3>As a torrent user, I am sick of those tons of adds, iframes and popups on my favorite torrens sites.</h3>Thanks to this plugin you can you can enable option to remove adds from torrent sites. It is not perfect, works with approx 90% of those stupid adds.</li>
+<li><h3>As a movie junkie, I browse torrents sites in search or interesting movies to watch, but need to check with movie site for the movie title, since I don't want to watch crap!</li></h3>This plugin can automatically extract movie title from torrent title and download movie description with rating from IMDB and/or FilmWeb.</li>
+<li><h3>... and since there are so much crappy movies it takes a lot of time to separate the wheat from the chaff.</h3>This plugin can hide movies with low rating and promote movies with high rating.</li>
+<li><h3>... and since I already watched so much movies, it takes a lot of time to find ones I didn't watched.</h3>Again, this plugin have a place call 'blacklist' where you can send the movie and it won't be visible in the following searches. Of course you can resurrect the movie from blacklist at any time.</li>
+<li><h3>I am not much of a movie junkie, I just want quickly and easily search on Google, Google Images or IMDB with query being equal to torrent title</h3>You can enable 'Links' column with your favorite search site.</li>
+</ol>
+
+<hr/>
+<h1>List of features</h1>
+<ol>
 <li>Integrates with PirateBay and IsoHunt</li>
-<li>Adds additional column to torrent search results with description and movie rating from IMDB and/or FilmWeb (it performs some basic heuristic to extract movie title and perform ajax calls to get the data form movie site)</li>
+<li>Adds additional column to torrent search results with description and movie rating from IMDB and/or FilmWeb. It performs some basic heuristic to extract movie title and perform ajax calls to get the data form movie site.</li>
 <li>Marks films with high rating to be better visible to the user</li>
 <li>Hides films with low rating not to be visible to the user </li>
 <li>Adds additional column to search results with links to:  Google search, Google graphic, Filmweb, Imdb search for the original torrent title or movie title</li>
-<li>Keeps track and hides unwanted movies</li>
+<li>Keeps track and hides unwanted movies (blacklist)</li>
 <li>Removes adds</li>
-
 </ol>
 
+<hr/>
 <h1>Screens</h1>
 
 <h2>Iso Hunt</h2>
@@ -90,7 +100,8 @@ Chrome extension to Pirate Bay &amp; Iso Hunt that integrates IMDB and/or FilmWe
 
 <p><a href="images/sample_screen_config_page2.png"><img src="images/sample_screen_config_page2.png"></a></p>
 
-<h1>Instalation</h1>
+<hr/>
+<h1>Installation</h1>
 <ol>
 <li>Download latest code, e.g: <a href="https://github.com/witoza/movie-description-for-torrent-chrome-extension/zipball/master">https://github.com/witoza/movie-description-for-torrent-chrome-extension/zipball/master</a>
 </li>
@@ -100,7 +111,11 @@ Chrome extension to Pirate Bay &amp; Iso Hunt that integrates IMDB and/or FilmWe
 <li>Click on <code>Load Unpacked Extension...</code>
 </li>
 <li>Select the folder containing the extension</li>
-</ol><h1>Future work</h1>
+<li>Have fun !</li>
+</ol>
+
+<hr/>
+<h1>Future work</h1>
 
 <ol>
 <li>fix problems with urls in imdb descr box</li>
