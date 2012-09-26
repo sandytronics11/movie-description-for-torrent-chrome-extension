@@ -7,14 +7,17 @@ function isMovieAlreadyBlacklisted(cleanedTitle) {
 }
 
 function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
+	var anyColumnAdded = false;
 	if (opts.Links.Use_torrent_title_as_query_param) {
 		htmlNode.append(getLinksColumn({
 			title : removeDelimiter(originalTitle),
 			year : null
 		}));
+		anyColumnAdded = true;
 	}
 	if (opts.Links.Use_movie_title_as_query_param) {
 		htmlNode.append(getLinksColumn(cleanedTitle));
+		anyColumnAdded = true;
 	}
 
 	if (opts.Links.Add_hide_movie_link) {
@@ -26,10 +29,12 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 		var blackListNode = $("<button name='name'>[hide]</button>");
 		blackListNode.click(function() {
 			addToBlackList(tk);
-			htmlNode.parent().hide('1000');
+			htmlNode.parent().hide(500);
 		});
 
-		htmlNode.append("<br/>");
+		if (anyColumnAdded) {
+			htmlNode.append("<br/>");
+		}
 		htmlNode.append(blackListNode);
 	}
 }
@@ -109,26 +114,37 @@ function makeHrefAbsolute(prefix, contentNode) {
 }
 
 function updateMovieSection(movieNode, content, movie, rating, intOpts) {
-	if (content == null) {
-		if (movie.year != undefined && movie.year != null) {
-			replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
-		} else {
-			replaceWith(movieNode, "Can't find '" + movie.title + "'.");
+	if (intOpts.Show_movie_rating_only) {
+		if (content == null) {
+			replaceWith(movieNode, "?");
+		} else{
+			if (rating > 0) {
+				replaceWith(movieNode, $("<div></div>").append("<a title='"+$(content).text()+"'>"+rating+"</a>"));
+			} else{
+				replaceWith(movieNode, "N/A");
+			}			
 		}
 	} else {
-		replaceWith(movieNode, $("<div></div>").append(content));
-
-		if (rating > 0) {
-
-			if (rating <= parseFloat(intOpts.Hide_movies_with_rating_less_than)) {
-				movieNode.parent().hide(2000);
+		if (content == null) {
+			if (movie.year != undefined && movie.year != null) {
+				replaceWith(movieNode, "Can't find '" + movie.title + "' of year " + movie.year + ".");
+			} else {
+				replaceWith(movieNode, "Can't find '" + movie.title + "'.");
 			}
-			if (rating >= parseFloat(intOpts.Mark_movies_with_rating_greater_or_equal_than)) {
-				movieNode.css('background-color', '#FFFFAA');
-			}
+		} else {
+			replaceWith(movieNode, $("<div></div>").append(content));	
 		}
-
 	}
+	
+	if (rating > 0) {
+		if (rating <= parseFloat(intOpts.Hide_movies_with_rating_less_than)) {
+			movieNode.parent().hide(500);
+		}
+		if (rating >= parseFloat(intOpts.Mark_movies_with_rating_greater_or_equal_than)) {
+			movieNode.css('background-color', '#FFFFAA');
+		}
+	}
+	
 }
 
 function createCheckbox(id, desc) {
@@ -137,6 +153,7 @@ function createCheckbox(id, desc) {
 
 function getOptionsBreadcrumbs() {
 	var switchNode = $("<div></div>");
+	switchNode.append(createCheckbox('enable_onoff', 'On'));
 	switchNode.append(createCheckbox('enable_filmweb_chb', 'Filmweb'));
 	switchNode.append(createCheckbox('enable_imdb_chb', 'Imdb'));
 	switchNode.append(createCheckbox('enable_links_chb', 'Links'));
@@ -165,6 +182,23 @@ function getOptionsBreadcrumbs() {
 		window.location.reload();
 	});
 	chbNode.attr('checked', opts.Links.Add_links);
+		
+	chbNode = switchNode.find("input[name='enable_onoff']");
+	chbNode.click(function() {
+		var checked = $(this).is(':checked');;
+		if (isPirateBay()) {
+			opts.General.Integrate_with_PirateBay = checked;
+		}else{
+			opts.General.Integrate_with_IsoHunt = checked;
+		}
+		updateOptions(opts);
+		window.location.reload();
+	});
+	if (isPirateBay()) {
+		chbNode.attr('checked', opts.General.Integrate_with_PirateBay);
+	}else{
+		chbNode.attr('checked', opts.General.Integrate_with_IsoHunt);
+	}
 
 	return switchNode;
 

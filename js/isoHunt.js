@@ -109,7 +109,7 @@ function augmentIsoHunt() {
 		
 		if (isMovieAlreadyBlacklisted(cleanedTitle)) {
 			console.log("movie '" + cleanedTitle.title + "' is blacklisted");
-			$(this).hide('1000');
+			$(this).hide(500);
 			return;
 		}
 

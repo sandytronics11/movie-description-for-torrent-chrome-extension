@@ -16,14 +16,16 @@ function getDefaultOptions() {
 			Integrate_with_IMDB : true,
 			Mark_movies_with_rating_greater_or_equal_than : "6.5",
 			Hide_movies_with_rating_less_than : "5.0",
-			Expire_cache_after_hours : "48"
+			Expire_cache_after_hours : "48",
+			Show_movie_rating_only : false
 		},
 		FilmWeb : {
 			Integrate_with_FilmWeb : true,
 			Fallback_to_IMDB_when_cant_find_movie : true,
 			Mark_movies_with_rating_greater_or_equal_than : "7.0",
 			Hide_movies_with_rating_less_than : "6.1",
-			Expire_cache_after_hours : "48"
+			Expire_cache_after_hours : "48",
+			Show_movie_rating_only : false
 		},
 		Links : {
 			Add_links : true,

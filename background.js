@@ -15,7 +15,7 @@ storage.get('opts', function(result) {
 			}, {
 
 				urls : [ "http://clkads.com/*", "http://www.facebook.com/*", "http://player.vimeo.com/*", "http://www.888poker.com/*",
-						"http://pl.888.com/*", "http://www.roulettebotplus.com/*" ]
+						"http://pl.888.com/*", "http://www.roulettebotplus.com/*","http://www.twoj-voucher.com/*" ]
 			}, [ "blocking" ]);
 
 		}

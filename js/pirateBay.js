@@ -25,9 +25,13 @@ function augmentPirateBay() {
 	console.log("[MAIN] Begin of scanning");
 	$('#searchResult').find("tbody").children().each(function(index) {
 
-		var titleNode = $(this).find(" .detName");
+		var titleNode = $(this).find(".detName");
 		if (titleNode.length == 0) {
-			return;
+			// it could be 'single' mode
+			titleNode = $(this).find(".vertTh").next();
+			if (titleNode.length == 0) {
+				return;				
+			}
 		}
 
 		var originalTitle = titleNode.children(":first").html();
@@ -41,7 +45,7 @@ function augmentPirateBay() {
 
 		if (isMovieAlreadyBlacklisted(cleanedTitle)) {
 			console.log("movie '" + cleanedTitle.title + "' is blacklisted");
-			$(this).hide('1000');
+			$(this).hide(500);
 			return;
 		}
 		
