@@ -38,8 +38,8 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 		}
 		htmlNode.append(watchedBtn);
 
-		htmlNode.append("&nbsp;/&nbsp;");
-		var wwatchBtn = $("<strong><a href='javascript:void(0)'>[won't watch]</a></strong>");
+		htmlNode.append("<BR/>");
+		var wwatchBtn = $("<strong><NOBR><a href='javascript:void(0)'>[won't watch]</a></NOBR></strong>");
 		wwatchBtn.click(function() {
 			myWW.add(tk);
 			htmlNode.parent().hide(500);
