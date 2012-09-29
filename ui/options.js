@@ -1,6 +1,10 @@
-function populateOptions(opts) {
-	for ( var categoryName in opts) {
-		var category = opts[categoryName];
+"use strict";
+
+var myOPT = new Options();
+
+function populateOptions() {
+	for ( var categoryName in myOPT.opts) {
+		var category = myOPT.opts[categoryName];
 		for ( var field in category) {
 			var node = $("#" + categoryName).find('input[name=' + field + ']');
 			if (typeof (category[field]) == "boolean") {
@@ -12,20 +16,9 @@ function populateOptions(opts) {
 	}
 }
 
-function reloadOptions() {
-	storage.get('opts', function(result) {
-		try {
-			populateOptions(result.opts);
-		} catch (e) {
-			console.log('error in reloadOptions: ' + e);
-		}
-	});
-}
-
 function saveOptions() {
-	var opts = getDefaultOptions();
-	for ( var categoryName in opts) {
-		var category = opts[categoryName];
+	for ( var categoryName in myOPT.opts) {
+		var category = myOPT.opts[categoryName];
 		for ( var field in category) {
 			var node = $("#" + categoryName).find('input[name=' + field + ']');
 			if (typeof (category[field]) == "boolean") {
@@ -35,12 +28,12 @@ function saveOptions() {
 			}
 		}
 	}
-	updateOptions(opts);
+	myOPT.save();
 }
 
 function buildHtml() {
 	var theBody = $("#body");
-	var opts = getDefaultOptions();
+	var opts = Options.prototype.getDefault();
 	for ( var categoryName in opts) {
 		theBody.append("<div id='" + categoryName + "'></div>");
 
@@ -65,26 +58,38 @@ function buildHtml() {
 	}
 }
 
+function loadOptions() {
+	myOPT.load(function(result) {
+		try {
+			populateOptions(result.opts);
+		} catch (e) {
+			console.log('error in loadOptions: ' + e);
+		}
+	});
+}
+
 $(document).ready(function() {
 
-	buildHtml();
-	reloadOptions();
-
 	$('#resetOptions').click(function() {
-		resetOptions();
-		reloadOptions();
+		myOPT.reset();
+		loadOptions();
 		alert("Done");
 	});
 
 	$('#saveOptions').click(function() {
 		saveOptions();
-		reloadOptions();
+		loadOptions();
 		alert("Done");
 	});
 
 	$('#cleanCache').click(function() {
-		filmwebCache.clean();
-		imdbCache.clean();
+		var cache = new MovieCache('filmwebCache');
+		cache.clean();
+		var cache = new MovieCache('imdbCache');
+		cache.clean();
 		alert("Done");
 	});
+
+	buildHtml();
+	loadOptions();
 });

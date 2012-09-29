@@ -1,4 +1,6 @@
-DELIMITER = "ISOHUNTTHEDELIMITERTHE";
+"use strict";
+
+var DELIMITER = "ISOHUNTTHEDELIMITERTHE";
 
 function removeDelimiter(str) {
 	return str.replace(new RegExp(DELIMITER, "gi"), "");
@@ -26,11 +28,12 @@ function getOriginalMovieTitle(htmlNode) {
 function getCleanTitleIsohunt(_movieTitle) {
 	var movieTitle = removeBrackets(_movieTitle, true);
 
-	var what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood", "animation",
-			"Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure", "Sci\\-Fi",
-			"Tutorial", "Mystery", "Family", "Dance", "War", "western", "horror", "animation", "thriller", "westerns", "action", "pop" ];
+	var what = [ "HD RIPS", "UCF.97", "x264", "dvdr", "xvid", "highres", "DVD", "DVD Rip", "DVD-R", "xxx", "porn", "bollywood",
+			"animation", "Documentary", "Romance", "Biography", "Sports", "Fantasy", "comedy", "drama", "crime", "anime", "adventure",
+			"Sci\\-Fi", "Tutorial", "Mystery", "Family", "Dance", "War", "western", "horror", "animation", "thriller", "westerns",
+			"action", "pop" ];
 
-	for (var i in what) {
+	for ( var i in what) {
 		movieTitle = movieTitle.replace(new RegExp("^" + what[i] + DELIMITER, "gi"), "");
 	}
 
@@ -42,15 +45,15 @@ function getCleanTitleIsohunt(_movieTitle) {
 }
 
 function augmentIsoHunt() {
-	
-	if (!opts.General.Integrate_with_IsoHunt) {
+
+	if (!myOPT.opts.General.Integrate_with_IsoHunt) {
 		console.log("not integrated - skipping");
 		return;
 	}
-	
+
 	getOptionsBreadcrumbs().insertBefore('#serps');
 
-	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
+	if (myOPT.opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("[MAIN] Removing adds");
 		$(document).find("a[href^='http://isohunt.com/a/adclick.php']").remove();
 		$(document).find("script").remove();
@@ -59,19 +62,19 @@ function augmentIsoHunt() {
 	}
 
 	var resultSet = $('#serps').find("tbody").children(":first");
-	if (opts.FilmWeb.Integrate_with_FilmWeb) {
+	if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
-	if (opts.IMDB.Integrate_with_IMDB) {
+	if (myOPT.opts.IMDB.Integrate_with_IMDB) {
 		resultSet.append("<th>" + prepateURLToOptions("IMDB") + "</th>");
 	}
-	if (opts.Links.Add_links) {
+	if (myOPT.opts.Links.Add_links) {
 		resultSet.append("<th>" + prepateURLToOptions("Links") + "</th>");
 	}
 
 	console.log("[MAIN] Begin of scanning");
 
-	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
+	if (myOPT.opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		$('#serps').find("tbody").children().each(function(index) {
 			$(this).removeAttr("onclick");
 			$(this).removeAttr("onmouseover");
@@ -106,29 +109,29 @@ function augmentIsoHunt() {
 			console.error("Torrent title is empty - looks like layout problem");
 			return;
 		}
-		
+
 		if (isMovieAlreadyBlacklisted(cleanedTitle)) {
 			console.log("movie '" + cleanedTitle.title + "' is blacklisted");
 			$(this).hide(500);
 			return;
 		}
 
-		if (opts.FilmWeb.Integrate_with_FilmWeb) {
+		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
 			var filmwebNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
 			$(this).append(filmwebNode);
 			addFilmwebCell(filmwebNode, cleanedTitle);
 		}
-		if (opts.IMDB.Integrate_with_IMDB) {
+		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
 			var imdbNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
 			$(this).append(imdbNode);
 			addIMDBCell(imdbNode, cleanedTitle);
 		}
-		if (opts.Links.Add_links) {
+		if (myOPT.opts.Links.Add_links) {
 			var linksNode = $("<td class=\"row3\"></td>");
 			$(this).append(linksNode);
 			addLinksCell(linksNode, originalTitle, cleanedTitle);
 		}
 	});
-	
+
 	console.log("[MAIN] End of scanning");
 }

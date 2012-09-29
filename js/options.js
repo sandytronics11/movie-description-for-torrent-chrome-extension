@@ -1,6 +1,22 @@
-storage = chrome.storage.local;
+"use strict";
 
-function getDefaultOptions() {
+function Options() {
+	this.opts = this.getDefault();
+}
+
+Options.prototype.load = function(callback) {
+	var that = this;
+	storage.get('opts', function(result) {
+		if (result.opts == undefined) {
+			that.opts = that.getDefault();
+		} else {
+			that.opts = result.opts;
+		}
+		callback(result);
+	});
+};
+
+Options.prototype.getDefault = function() {
 	return {
 		General : {
 			Enable_this_plugin : true,
@@ -38,15 +54,15 @@ function getDefaultOptions() {
 			Use_movie_title_as_query_param : true
 		}
 	};
-}
+};
 
-function resetOptions() {
-	storage.remove('opts');
-	updateOptions(getDefaultOptions());
-}
+Options.prototype.reset = function() {
+	this.opts = this.getDefault();
+	this.save();
+};
 
-function updateOptions(opts) {
-	storage.set({
-		'opts' : opts
+Options.prototype.save = function() {
+	chrome.storage.local.set({
+		'opts' : this.opts
 	});
-}
+};

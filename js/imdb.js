@@ -1,4 +1,6 @@
-imdbUrl = "http://www.imdb.com";
+"use strict";
+
+var imdbUrl = "http://www.imdb.com";
 
 function getRatingFromIMDB(contentNode) {
 	var rating = null;
@@ -12,8 +14,8 @@ function getRatingFromIMDB(contentNode) {
 }
 
 function removeMetaHtmlAttrs(node, what) {
-	var what = [ "id", "itemprop", "itemscope", "itemtype", "onclick"];
-	for (i in what) {
+	var what = [ "id", "itemprop", "itemscope", "itemtype", "onclick" ];
+	for ( var i in what) {
 		node.find("*").removeAttr(what[i]);
 	}
 }
@@ -27,7 +29,7 @@ function extractDataFromMoviePage(n, movieId) {
 	n.find(".rightcornerlink,.star-box-rating-widget,.star-box-giga-star,.clear").remove();
 	n.find("p:empty").remove();
 
-	if (!opts.Integration.Display_detailed_informations) {
+	if (!myOPT.opts.Integration.Display_detailed_informations) {
 		n.find(".txt-block").remove();
 	}
 
@@ -136,11 +138,11 @@ function callImdbForMovie(movieNode, Movie, movieId) {
 		success : function(data) {
 			var contentNode = $(data).find("#overview-top");
 			contentNode = extractDataFromMoviePage(contentNode, movieId);
-			
+
 			var rating = getRatingFromIMDB(contentNode);
 			contentNode.find("*").removeAttr("class");
 			imdbCache.addMovie(Movie, contentNode.html(), rating);
-			updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
+			updateMovieSection(movieNode, contentNode.html(), Movie, rating, myOPT.opts.IMDB);
 
 		},
 		failure : function(data) {
@@ -175,7 +177,7 @@ function callImdbForAnything(movieNode, Movie) {
 				var rating = getRatingFromIMDB(contentNode);
 				contentNode.find("*").removeAttr("class");
 				imdbCache.addMovie(Movie, contentNode.html(), rating);
-				updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating, myOPT.opts.IMDB);
 			}
 		},
 		failure : function(data) {
@@ -260,7 +262,7 @@ function callImdbForFirstHit(movieNode, Movie) {
 				var rating = getRatingFromIMDB(contentNode);
 				contentNode.find("*").removeAttr("class");
 				imdbCache.addMovie(Movie, contentNode.html(), rating);
-				updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.IMDB);
+				updateMovieSection(movieNode, contentNode.html(), Movie, rating, myOPT.opts.IMDB);
 			} else {
 				callImdbForSpecialTitle(movieNode, Movie);
 			}
@@ -277,7 +279,7 @@ function callImdb(movieNode, movie) {
 
 	var cachedMovie = imdbCache.getFromCache(movie);
 	if (cachedMovie != undefined) {
-		updateMovieSection(movieNode, cachedMovie.content, movie, cachedMovie.rating, opts.IMDB);
+		updateMovieSection(movieNode, cachedMovie.content, movie, cachedMovie.rating, myOPT.opts.IMDB);
 	} else {
 		callImdbForFirstHit(movieNode, movie);
 	}

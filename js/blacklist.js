@@ -1,35 +1,55 @@
-storage = chrome.storage.local;
+"use strict";
 
-function getDefaultMblackList() {
+function Blacklist() {
+	this.mblacklist = this.getDefault();
+}
+
+Blacklist.prototype.load = function(callback) {
+	var that = this;
+	chrome.storage.local.get([ 'mblacklist' ], function(result) {
+		if (result.mblacklist == undefined) {
+			that.mblacklist = that.getDefault();
+		} else {
+			that.mblacklist = result.mblacklist;
+		}
+		that.mblacklist.movies.sort();
+		console.log("mblacklist = " + JSON.stringify(that.mblacklist));
+		callback(result);
+	});
+};
+
+Blacklist.prototype.getDefault = function() {
 	return {
 		movies : []
 	};
-}
+};
 
-function resetMblacklist() {
-	storage.remove('mblacklist');
-	var def = getDefaultMblackList();
-	updateBlacklist(def);
-	mblacklist = def;
-}
+Blacklist.prototype.clear = function() {
+	this.mblacklist = this.getDefault();
+};
 
-function updateBlacklist(mblacklist) {
-	storage.set({
-		'mblacklist' : mblacklist
+Blacklist.prototype.reset = function() {
+	this.clear();
+	this.save();
+};
+
+Blacklist.prototype.save = function() {
+	chrome.storage.local.set({
+		'mblacklist' : this.mblacklist
 	});
-}
+};
 
-function isBlacklisted(movie) {
-	for ( var i in mblacklist.movies) {
-		if (mblacklist.movies[i] == movie) {
+Blacklist.prototype.isBlacklisted = function(movie) {
+	for ( var i in this.mblacklist.movies) {
+		if (this.mblacklist.movies[i] == movie) {
 			return true;
 		}
 	}
 	return false;
-}
+};
 
-function addToBlackList(movie) {
+Blacklist.prototype.add = function(movie) {
 	console.log("blacklisting movie: '" + movie + "'");
-	mblacklist["movies"].push(movie);
-	updateBlacklist(mblacklist);
-}
+	this.mblacklist["movies"].push(movie);
+	this.save();
+};

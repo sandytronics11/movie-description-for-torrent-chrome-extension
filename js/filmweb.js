@@ -1,4 +1,6 @@
-filmwebUrl = "http://www.filmweb.pl";
+"use strict";
+
+var filmwebUrl = "http://www.filmweb.pl";
 
 function getRatingFromFilmWeb(contentNode) {
 	var rating = null;
@@ -16,7 +18,7 @@ function callFilmweb(movieNode, Movie, callback) {
 
 	var cachedMovie = filmwebCache.getFromCache(Movie);
 	if (cachedMovie != undefined) {
-		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating, opts.FilmWeb);
+		updateMovieSection(movieNode, cachedMovie.content, Movie, cachedMovie.rating, myOPT.opts.FilmWeb);
 	} else {
 
 		var params = {
@@ -37,7 +39,7 @@ function callFilmweb(movieNode, Movie, callback) {
 			success : function(data) {
 				var contentNode = $(data).find("#searchFixCheck").children(":first").find(".searchResultCol_2_wrapper");
 
-				if (!opts.Integration.Display_detailed_informations) {
+				if (!myOPT.opts.Integration.Display_detailed_informations) {
 					contentNode.find(".searchResultDetails").remove();
 				}
 
@@ -47,10 +49,10 @@ function callFilmweb(movieNode, Movie, callback) {
 					contentNode.find("*").removeAttr("class");
 					contentNode.find("span:empty").remove();
 					filmwebCache.addMovie(Movie, contentNode.html(), rating);
-					updateMovieSection(movieNode, contentNode.html(), Movie, rating, opts.FilmWeb);
+					updateMovieSection(movieNode, contentNode.html(), Movie, rating, myOPT.opts.FilmWeb);
 					callback(true);
 				} else {
-					updateMovieSection(movieNode, null, Movie, null, opts.FilmWeb);
+					updateMovieSection(movieNode, null, Movie, null, myOPT.opts.FilmWeb);
 					callback(false);
 				}
 

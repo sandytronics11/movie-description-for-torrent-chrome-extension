@@ -1,14 +1,8 @@
-function removeNulls(arr) {
-	var res = [];
-	for ( var i in arr) {
-		if (arr[i] != undefined) {
-			res.push(arr[i]);
-		}
-	}
-	return res;
-}
+"use strict";
 
-function enableSaveDiscard(really) {
+var myBL = new Blacklist();
+
+function enableSaveAndDiscardBtns(really) {
 	if (really) {
 		$('#discard').removeAttr("disabled");
 		$('#save').removeAttr("disabled");
@@ -18,10 +12,10 @@ function enableSaveDiscard(really) {
 	}
 }
 
-function buildHtmlBl() {
+function buildBlacklistGUI() {
 	var theHtml = "<table><tr></tr>";
-	for ( var i in mblacklist.movies) {
-		var colMovie = "<td>" + mblacklist.movies[i] + "</td>";
+	for ( var i in myBL.mblacklist.movies) {
+		var colMovie = "<td>" + myBL.mblacklist.movies[i] + "</td>";
 		var colRemove = "<td><button class='res' name='" + i + "'>resurrect</button></td>";
 		theHtml = theHtml + "<tr id='movie_" + i + "'>" + colMovie + colRemove + "</tr>";
 	}
@@ -30,52 +24,32 @@ function buildHtmlBl() {
 
 	$('.res').click(function() {
 		var id = this.name;
-		delete mblacklist.movies[id];
+		myBL.mblacklist.movies.splice(id, 1);
 		$("#movie_" + id).hide();
-		enableSaveDiscard(true);
+		enableSaveAndDiscardBtns(true);
 	});
-	enableSaveDiscard(false);
+	enableSaveAndDiscardBtns(false);
+}
+
+function loadBlacklist() {
+	myBL.load(buildBlacklistGUI);
 }
 
 $(document).ready(function() {
 
-	chrome.storage.local.get([ 'mblacklist' ], function(result) {
-		if (result.mblacklist == undefined) {
-			mblacklist = getDefaultMblackList();
-		} else {
-			mblacklist = result.mblacklist;
-			mblacklist.movies.sort();
-		}
-
-		console.log("mblacklist = " + JSON.stringify(mblacklist));
-
-		$('#save').click(function() {
-			mblacklist.movies = removeNulls(mblacklist.movies);
-			updateBlacklist(mblacklist);
-			buildHtmlBl();
-		});
-
-		$('#discard').click(function() {
-
-			chrome.storage.local.get([ 'mblacklist' ], function(result) {
-				if (result.mblacklist == undefined) {
-					mblacklist = getDefaultMblackList();
-				} else {
-					mblacklist = result.mblacklist;
-					mblacklist.movies.sort();
-				}
-				buildHtmlBl();
-			});
-		});
-
-		$('#resurrectAll').click(function() {
-			mblacklist = getDefaultMblackList();
-			buildHtmlBl();
-			enableSaveDiscard(true);
-		});
-
-		buildHtmlBl();
-
+	$('#save').click(function() {
+		myBL.save();
+		buildBlacklistGUI();
 	});
+
+	$('#discard').click(loadBlacklist);
+
+	$('#resurrectAll').click(function() {
+		myBL.clear();
+		buildBlacklistGUI();
+		enableSaveAndDiscardBtns(true);
+	});
+
+	loadBlacklist();
 
 });

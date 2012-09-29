@@ -1,7 +1,6 @@
-storage = chrome.storage.local;
+"use strict";
 
-filmwebCache = new MovieCache('filmwebCache');
-imdbCache = new MovieCache('imdbCache');
+var storage = chrome.storage.local;
 
 function MovieCache(cacheName) {
 	this.cacheName = cacheName;
@@ -20,25 +19,25 @@ MovieCache.prototype.clean = function() {
 };
 
 MovieCache.prototype.display = function() {
-	var _this = this;
+	var that = this;
 	storage.getBytesInUse(this.cacheName, function(result) {
-		_this.log("Cache size in use: " + Math.round(result / 1024) + "KB out of 5 MB");
+		that.log("Cache size in use: " + Math.round(result / 1024) + "KB out of 5 MB");
 	});
 };
 
 MovieCache.prototype.reload = function(callBack) {
-	var _this = this;
-	_this.log("Loading cache");
+	var that = this;
+	that.log("Loading cache");
 	storage.get(this.cacheName, function(result) {
-		if (result[_this.cacheName] != undefined) {
-			_this.log("Cache is not empty");
-			_this.content = result[_this.cacheName];
-			_this.display();
+		if (result[that.cacheName] != undefined) {
+			that.log("Cache is not empty");
+			that.content = result[that.cacheName];
+			that.display();
 		} else {
-			_this.log("The cache is empty");
-			_this.content = {};
+			that.log("The cache is empty");
+			that.content = {};
 		}
-		callBack();
+		callBack(result);
 	});
 };
 
@@ -53,9 +52,9 @@ MovieCache.prototype.save = function() {
 	if (this.saveTimer != null) {
 		clearTimeout(this.saveTimer);
 	}
-	var _this = this;
+	var that = this;
 	this.saveTimer = setTimeout(function() {
-		_this.saveCacheForReal();
+		that.saveCacheForReal();
 	}, this.quietPeriodMs);
 
 };

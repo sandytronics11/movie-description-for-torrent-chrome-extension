@@ -1,26 +1,28 @@
+"use strict";
+
 function isMovieAlreadyBlacklisted(cleanedTitle) {
 	var tk = cleanedTitle.title;
 	if (cleanedTitle.year != null) {
 		tk = tk + " (" + cleanedTitle.year + ")";
 	}
-	return isBlacklisted(tk);
+	return myBL.isBlacklisted(tk);
 }
 
 function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 	var anyColumnAdded = false;
-	if (opts.Links.Use_torrent_title_as_query_param) {
+	if (myOPT.opts.Links.Use_torrent_title_as_query_param) {
 		htmlNode.append(getLinksColumn({
 			title : removeDelimiter(originalTitle),
 			year : null
 		}));
 		anyColumnAdded = true;
 	}
-	if (opts.Links.Use_movie_title_as_query_param) {
+	if (myOPT.opts.Links.Use_movie_title_as_query_param) {
 		htmlNode.append(getLinksColumn(cleanedTitle));
 		anyColumnAdded = true;
 	}
 
-	if (opts.Links.Add_hide_movie_link) {
+	if (myOPT.opts.Links.Add_hide_movie_link) {
 		var tk = cleanedTitle.title;
 		if (cleanedTitle.year != null) {
 			tk = tk + " (" + cleanedTitle.year + ")";
@@ -28,7 +30,7 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 
 		var blackListNode = $("<button name='name'>[hide]</button>");
 		blackListNode.click(function() {
-			addToBlackList(tk);
+			myBL.add(tk);
 			htmlNode.parent().hide(500);
 		});
 
@@ -40,7 +42,7 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 }
 
 function addFilmwebCell(htmlNode, cleanedTitle) {
-	var callIMDBWhenNeeded = !opts.IMDB.Integrate_with_IMDB && opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
+	var callIMDBWhenNeeded = !myOPT.opts.IMDB.Integrate_with_IMDB && myOPT.opts.FilmWeb.Fallback_to_IMDB_when_cant_find_movie;
 	if (cleanedTitle.not_sure && filmwebCache.getFromCache(cleanedTitle) == undefined) {
 		var node = $("<p>Is '" + removeDelimiter(cleanedTitle.title) + "' a movie ?</p>");
 		node.click(function() {
@@ -76,7 +78,7 @@ function addIMDBCell(htmlNode, cleanedTitle) {
 }
 
 function callAjax(qname, callOpts) {
-	if (opts.Integration.Download_one_movie_descryption_at_a_time) {
+	if (myOPT.opts.Integration.Download_one_movie_descryption_at_a_time) {
 		$.ajaxq(qname, callOpts);
 	} else {
 		$.ajax(callOpts);
@@ -113,16 +115,22 @@ function makeHrefAbsolute(prefix, contentNode) {
 	});
 }
 
+function htmlEscape(text) {
+	return text.replace(/[<>\&\"\']/g, function(c) {
+		return '&#' + c.charCodeAt(0) + ';';
+	});
+}
+
 function updateMovieSection(movieNode, content, movie, rating, intOpts) {
 	if (intOpts.Show_movie_rating_only) {
 		if (content == null) {
 			replaceWith(movieNode, "?");
-		} else{
+		} else {
 			if (rating > 0) {
-				replaceWith(movieNode, $("<div></div>").append("<a title='"+$(content).text()+"'>"+rating+"</a>"));
-			} else{
+				replaceWith(movieNode, $("<div></div>").append("<a title='" + htmlEscape($(content).text()) + "'>" + rating + "</a>"));
+			} else {
 				replaceWith(movieNode, "N/A");
-			}			
+			}
 		}
 	} else {
 		if (content == null) {
@@ -132,10 +140,10 @@ function updateMovieSection(movieNode, content, movie, rating, intOpts) {
 				replaceWith(movieNode, "Can't find '" + movie.title + "'.");
 			}
 		} else {
-			replaceWith(movieNode, $("<div></div>").append(content));	
+			replaceWith(movieNode, $("<div></div>").append(content));
 		}
 	}
-	
+
 	if (rating > 0) {
 		if (rating <= parseFloat(intOpts.Hide_movies_with_rating_less_than)) {
 			movieNode.parent().hide(500);
@@ -144,64 +152,27 @@ function updateMovieSection(movieNode, content, movie, rating, intOpts) {
 			movieNode.css('background-color', '#FFFFAA');
 		}
 	}
-	
+
 }
 
-function createCheckbox(id, desc) {
-	return "<input name='" + id + "' type='checkbox'>" + desc + "</input>";
+function createCheckboxOption(optionName, optionDescr, opts) {
+	var chcb = $("<input type='checkbox'>" + optionDescr + "</input>");
+	chcb.click(function() {
+		opts[optionName] = $(this).is(':checked');
+		myOPT.save();
+		window.location.reload();
+	});
+	chcb.attr('checked', opts[optionName]);
+	return chcb;
 }
 
 function getOptionsBreadcrumbs() {
-	var switchNode = $("<div></div>");
-	switchNode.append(createCheckbox('enable_onoff', 'On'));
-	switchNode.append(createCheckbox('enable_filmweb_chb', 'Filmweb'));
-	switchNode.append(createCheckbox('enable_imdb_chb', 'Imdb'));
-	switchNode.append(createCheckbox('enable_links_chb', 'Links'));
-	switchNode.append(prepateURLToOptions("  [More...]"));
-
-	var chbNode = switchNode.find("input[name='enable_filmweb_chb']");
-	chbNode.click(function() {
-		opts.FilmWeb.Integrate_with_FilmWeb = $(this).is(':checked');
-		updateOptions(opts);
-		window.location.reload();
-	});
-	chbNode.attr('checked', opts.FilmWeb.Integrate_with_FilmWeb);
-
-	chbNode = switchNode.find("input[name='enable_imdb_chb']");
-	chbNode.click(function() {
-		opts.IMDB.Integrate_with_IMDB = $(this).is(':checked');
-		updateOptions(opts);
-		window.location.reload();
-	});
-	chbNode.attr('checked', opts.IMDB.Integrate_with_IMDB);
-
-	chbNode = switchNode.find("input[name='enable_links_chb']");
-	chbNode.click(function() {
-		opts.Links.Add_links = $(this).is(':checked');
-		updateOptions(opts);
-		window.location.reload();
-	});
-	chbNode.attr('checked', opts.Links.Add_links);
-		
-	chbNode = switchNode.find("input[name='enable_onoff']");
-	chbNode.click(function() {
-		var checked = $(this).is(':checked');;
-		if (isPirateBay()) {
-			opts.General.Integrate_with_PirateBay = checked;
-		}else{
-			opts.General.Integrate_with_IsoHunt = checked;
-		}
-		updateOptions(opts);
-		window.location.reload();
-	});
-	if (isPirateBay()) {
-		chbNode.attr('checked', opts.General.Integrate_with_PirateBay);
-	}else{
-		chbNode.attr('checked', opts.General.Integrate_with_IsoHunt);
-	}
-
-	return switchNode;
-
+	var optionNode = $("<div></div>");
+	optionNode.append(createCheckboxOption("Integrate_with_FilmWeb", "Filmweb", myOPT.opts.FilmWeb));
+	optionNode.append(createCheckboxOption("Integrate_with_IMDB", "IMDB", myOPT.opts.IMDB));
+	optionNode.append(createCheckboxOption("Add_links", "Links", myOPT.opts.Links));
+	optionNode.append(prepateURLToOptions("  [More...]"));
+	return optionNode;
 }
 
 function prepateURLToOptions(title) {
@@ -314,13 +285,13 @@ function getCleanTitleGeneric(originalTitle) {
 function getLinksColumn(param) {
 
 	var node = $("<p></p>");
-	if (opts.Links.Add_Google_Search_link) {
+	if (myOPT.opts.Links.Add_Google_Search_link) {
 		node.append("<a href='https://www.google.pl/search?" + $.param({
 			q : param.title
 		}) + "' target='_blank'>[search]</a>");
 		node.append("<br/>");
 	}
-	if (opts.Links.Add_Google_Graphic_link) {
+	if (myOPT.opts.Links.Add_Google_Graphic_link) {
 		node.append("<a href='https://www.google.pl/search?" + $.param({
 			safe : "off",
 			q : param.title,
@@ -328,13 +299,13 @@ function getLinksColumn(param) {
 		}) + "' target='_blank'>[pics]</a>");
 		node.append("<br/>");
 	}
-	if (opts.Links.Add_Filmweb_link) {
+	if (myOPT.opts.Links.Add_Filmweb_link) {
 		node.append("<a href='http://www.filmweb.pl/search?" + $.param({
 			q : param.title
 		}) + "' target='_blank'>[filmweb]</a>");
 		node.append("<br/>");
 	}
-	if (opts.Links.Add_IMDB_link) {
+	if (myOPT.opts.Links.Add_IMDB_link) {
 		var yearInfo = "";
 		if (param.year != null) {
 			yearInfo = " (" + param.year + ")";
