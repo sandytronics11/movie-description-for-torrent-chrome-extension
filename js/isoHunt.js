@@ -45,15 +45,16 @@ function getCleanTitleIsohunt(_movieTitle) {
 }
 
 function augmentIsoHunt() {
+	var opts = myOPT.opts;
 
-	if (!myOPT.opts.General.Integrate_with_IsoHunt) {
+	if (!opts.General.Integrate_with_IsoHunt) {
 		console.log("not integrated - skipping");
 		return;
 	}
 
-	getOptionsBreadcrumbs().insertBefore('#serps');
+	createOptionsBreadcrumbsNode().insertBefore('#serps');
 
-	if (myOPT.opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
+	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		console.log("[MAIN] Removing adds");
 		$(document).find("a[href^='http://isohunt.com/a/adclick.php']").remove();
 		$(document).find("script").remove();
@@ -62,19 +63,19 @@ function augmentIsoHunt() {
 	}
 
 	var resultSet = $('#serps').find("tbody").children(":first");
-	if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+	if (opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}
-	if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+	if (opts.IMDB.Integrate_with_IMDB) {
 		resultSet.append("<th>" + prepateURLToOptions("IMDB") + "</th>");
 	}
-	if (myOPT.opts.Links.Add_links) {
+	if (opts.Links.Add_links) {
 		resultSet.append("<th>" + prepateURLToOptions("Links") + "</th>");
 	}
 
 	console.log("[MAIN] Begin of scanning");
 
-	if (myOPT.opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
+	if (opts.General.Remove_adds_on_PirateBay_and_IsoHunt) {
 		$('#serps').find("tbody").children().each(function(index) {
 			$(this).removeAttr("onclick");
 			$(this).removeAttr("onmouseover");
@@ -116,17 +117,17 @@ function augmentIsoHunt() {
 			return;
 		}
 
-		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+		if (opts.FilmWeb.Integrate_with_FilmWeb) {
 			var filmwebNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
 			$(this).append(filmwebNode);
 			addFilmwebCell(filmwebNode, cleanedTitle);
 		}
-		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+		if (opts.IMDB.Integrate_with_IMDB) {
 			var imdbNode = $("<td class=\"row3\">" + getAjaxIcon() + "</td>");
 			$(this).append(imdbNode);
 			addIMDBCell(imdbNode, cleanedTitle);
 		}
-		if (myOPT.opts.Links.Add_links) {
+		if (opts.Links.Add_links) {
 			var linksNode = $("<td class=\"row3\"></td>");
 			$(this).append(linksNode);
 			addLinksCell(linksNode, originalTitle, cleanedTitle);

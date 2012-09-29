@@ -5,7 +5,7 @@ function isMovieAlreadyBlacklisted(cleanedTitle) {
 	if (cleanedTitle.year != null) {
 		tk = tk + " (" + cleanedTitle.year + ")";
 	}
-	return myBL.isBlacklisted(tk);
+	return myBL.isBlacklisted(tk) || myWW.isBlacklisted(tk);
 }
 
 function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
@@ -28,16 +28,24 @@ function addLinksCell(htmlNode, originalTitle, cleanedTitle) {
 			tk = tk + " (" + cleanedTitle.year + ")";
 		}
 
-		var blackListNode = $("<button name='name'>[hide]</button>");
-		blackListNode.click(function() {
+		var watchedBtn = $("<strong><a href='javascript:void(0)'>[watched]</a></strong>");
+		watchedBtn.click(function() {
 			myBL.add(tk);
 			htmlNode.parent().hide(500);
 		});
-
 		if (anyColumnAdded) {
 			htmlNode.append("<br/>");
 		}
-		htmlNode.append(blackListNode);
+		htmlNode.append(watchedBtn);
+
+		htmlNode.append("&nbsp;/&nbsp;");
+		var wwatchBtn = $("<strong><a href='javascript:void(0)'>[won't watch]</a></strong>");
+		wwatchBtn.click(function() {
+			myWW.add(tk);
+			htmlNode.parent().hide(500);
+		});
+		htmlNode.append(wwatchBtn);
+
 	}
 }
 
@@ -166,7 +174,7 @@ function createCheckboxOption(optionName, optionDescr, opts) {
 	return chcb;
 }
 
-function getOptionsBreadcrumbs() {
+function createOptionsBreadcrumbsNode() {
 	var optionNode = $("<div></div>");
 	optionNode.append(createCheckboxOption("Integrate_with_FilmWeb", "Filmweb", myOPT.opts.FilmWeb));
 	optionNode.append(createCheckboxOption("Integrate_with_IMDB", "IMDB", myOPT.opts.IMDB));

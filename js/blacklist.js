@@ -1,19 +1,20 @@
 "use strict";
 
-function Blacklist() {
+function Blacklist(name) {
+	this.name = name;
 	this.mblacklist = this.getDefault();
 }
 
 Blacklist.prototype.load = function(callback) {
 	var that = this;
-	chrome.storage.local.get([ 'mblacklist' ], function(result) {
-		if (result.mblacklist == undefined) {
+	chrome.storage.local.get([ that.name ], function(result) {
+		if (result[that.name] == undefined) {
 			that.mblacklist = that.getDefault();
 		} else {
-			that.mblacklist = result.mblacklist;
+			that.mblacklist = result[that.name];
 		}
 		that.mblacklist.movies.sort();
-		console.log("mblacklist = " + JSON.stringify(that.mblacklist));
+		console.log("content for '" + that.name + "' = " + JSON.stringify(that.mblacklist));
 		callback(result);
 	});
 };
@@ -34,9 +35,9 @@ Blacklist.prototype.reset = function() {
 };
 
 Blacklist.prototype.save = function() {
-	chrome.storage.local.set({
-		'mblacklist' : this.mblacklist
-	});
+	var obj = {};
+	obj[this.name] = this.mblacklist;
+	chrome.storage.local.set(obj);
 };
 
 Blacklist.prototype.isBlacklisted = function(movie) {
@@ -49,7 +50,7 @@ Blacklist.prototype.isBlacklisted = function(movie) {
 };
 
 Blacklist.prototype.add = function(movie) {
-	console.log("blacklisting movie: '" + movie + "'");
-	this.mblacklist["movies"].push(movie);
+	console.log("adding to list " + this.name + " item: '" + movie + "'");
+	this.mblacklist.movies.push(movie);
 	this.save();
 };

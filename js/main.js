@@ -1,7 +1,8 @@
 "use strict";
 
 var myOPT = new Options();
-var myBL = new Blacklist();
+var myBL = new Blacklist("mblacklist");
+var myWW = new Blacklist("mwontwatch");
 
 var filmwebCache = new MovieCache('filmwebCache');
 var imdbCache = new MovieCache('imdbCache');
@@ -15,16 +16,16 @@ $(document).ready(function() {
 		console.log("opts = " + JSON.stringify(myOPT.opts));
 		if (myOPT.opts.General.Enable_this_plugin) {
 			myBL.load(function() {
-				console.log("mblacklist = " + JSON.stringify(myBL.mblacklist));
+				myWW.load(function() {
+					filmwebCache.reload(function() {
+						imdbCache.reload(function() {
+							if (isPirateBay()) {
+								augmentPirateBay();
+							} else {
+								augmentIsoHunt();
+							}
 
-				filmwebCache.reload(function() {
-					imdbCache.reload(function() {
-						if (isPirateBay()) {
-							augmentPirateBay();
-						} else {
-							augmentIsoHunt();
-						}
-
+						});
 					});
 				});
 			});
