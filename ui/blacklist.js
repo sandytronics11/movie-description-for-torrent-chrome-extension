@@ -23,7 +23,9 @@ function BlacklistGUI(myBL, anchorName) {
 
 	this.discardBtn = $("<button>Discard changes</button>");
 	this.discardBtn.click(function() {
-		that.loadBlacklist();
+		that.myBL.load(function() {
+			that.buildBlacklistGUI();
+		});
 	});
 
 	this.resurrectAll = $("<button>Resurrect All</button>");
@@ -37,61 +39,74 @@ function BlacklistGUI(myBL, anchorName) {
 	anchor.append(this.saveBtn);
 	anchor.append(this.discardBtn);
 	anchor.append(this.resurrectAll);
-	anchor.append("<br/>");
-	anchor.append("<br/>");
-	anchor.append("<br/>");
 	anchor.append("<div id='" + this.myBL.name + "_list'></div>");
 }
 
 BlacklistGUI.prototype.enableSaveAndDiscardBtns = function(really) {
 	if (really) {
-		this.discardBtn.removeAttr("disabled");
-		this.saveBtn.removeAttr("disabled");
+		this.discardBtn.show();
+		this.saveBtn.show();
 	} else {
-		this.discardBtn.attr("disabled", "disabled");
-		this.saveBtn.attr("disabled", "disabled");
+		this.discardBtn.hide();
+		this.saveBtn.hide();
 	}
 };
 
 BlacklistGUI.prototype.buildBlacklistGUI = function() {
 
-	var className = this.myBL.name;
-	var theHtml = "<table><tr></tr>";
-	for ( var i in this.myBL.mblacklist.movies) {
-		var colMovie = "<td>" + this.myBL.mblacklist.movies[i] + "</td>";
-		var colRemove = "<td><button class='" + className + "' name='" + i + "'>resurrect</button></td>";
-		theHtml = theHtml + "<tr id='" + className + "_" + i + "'>" + colMovie + colRemove + "</tr>";
-	}
-	theHtml = theHtml + "</table>";
-	$('#' + className + "_list").empty().append(theHtml);
 	var that = this;
-	$('button.' + className).click(function() {
-		var id = this.name;
-		delete that.myBL.mblacklist.movies[id];
-		$("#" + className + "_" + id).hide();
-		that.enableSaveAndDiscardBtns(true);
-	});
+	var nTable = $("<table border=1></table>");
+	nTable.append($("<tr></tr>"));
+	var className = this.myBL.name;
+	for ( var i in this.myBL.mblacklist.movies) {
+		var nRow = $("<tr></tr>");
+		var cleanedTitle = this.myBL.mblacklist.movies[i];
+		var colMovie = $("<td>" + this.myBL.stringify(cleanedTitle) + "</td>");
+		var resurrectBtn = $("<button name='" + i + "'>resurrect</button>");
+		resurrectBtn.click(function() {
+			var id = this.name;
+			delete that.myBL.mblacklist.movies[id];
+			$("#" + className + "_" + id).hide(500);
+			that.enableSaveAndDiscardBtns(true);
+		});
+
+		var colRemove = $("<td></td>");
+		colRemove.append(resurrectBtn);
+
+		nRow.attr('id', className + "_" + i);
+		nRow.append($("<td>#" + (1 + parseInt(i)) + "</td>"));
+		nRow.append(colMovie);
+		nRow.append(colRemove);
+
+		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+			var filmwebNode = $("<td>" + getAjaxIcon() + "</td>");
+			nRow.append(filmwebNode);
+			//TODO: too fast
+			//addFilmwebCell(filmwebNode, cleanedTitle);
+		}
+
+		nTable.append(nRow);
+	}
+
+	$('#' + className + "_list").empty().append(nTable).append("Approx total days (24h) ~ " + (1.5 * this.myBL.mblacklist.movies.length)/24.0);
+
 	this.enableSaveAndDiscardBtns(false);
 };
 
-BlacklistGUI.prototype.loadBlacklist = function() {
-	var that = this;
-	this.myBL.load(function() {
-		that.buildBlacklistGUI();
-	});
-};
-
 $(document).ready(function() {
-	var myBL = new Blacklist("mblacklist");
-	myBL.load(function() {
-		var blg = new BlacklistGUI(myBL, "#watched_blacklist");
-		blg.buildBlacklistGUI();
-	});
 
-	var myBL2 = new Blacklist("mwontwatch");
-	myBL2.load(function() {
-		var blg = new BlacklistGUI(myBL2, "#wonwatch_blacklist");
-		blg.buildBlacklistGUI();
+	afterLoad(function() {
+		var myBL = new Blacklist("mblacklist");
+		myBL.load(function() {
+			var blg = new BlacklistGUI(myBL, "#watched_blacklist");
+			blg.buildBlacklistGUI();
+		});
+
+		var myBL2 = new Blacklist("mwontwatch");
+		myBL2.load(function() {
+			var blg = new BlacklistGUI(myBL2, "#wonwatch_blacklist");
+			blg.buildBlacklistGUI();
+		});
 	});
 
 });

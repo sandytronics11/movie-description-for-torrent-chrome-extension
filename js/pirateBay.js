@@ -14,7 +14,7 @@ function augmentPirateBay() {
 		console.log("[MAIN] Removing adds");
 		$('iframe').remove();
 	}
-	var resultSet = $('#tableHead').children(":first");
+	var resultSet = $('#tableHead').find(" .header");
 	if (opts.FilmWeb.Integrate_with_FilmWeb) {
 		resultSet.append("<th>" + prepateURLToOptions("FilmWeb") + "</th>");
 	}

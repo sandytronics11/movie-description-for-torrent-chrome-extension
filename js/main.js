@@ -1,35 +1,15 @@
 "use strict";
 
-var myOPT = new Options();
-var myBL = new Blacklist("mblacklist");
-var myWW = new Blacklist("mwontwatch");
-
-var filmwebCache = new MovieCache('filmwebCache');
-var imdbCache = new MovieCache('imdbCache');
-
 function isPirateBay() {
 	return window.location.hostname.indexOf("pirate") >= 0;
 }
 
 $(document).ready(function() {
-	myOPT.load(function() {
-		console.log("opts = " + JSON.stringify(myOPT.opts));
-		if (myOPT.opts.General.Enable_this_plugin) {
-			myBL.load(function() {
-				myWW.load(function() {
-					filmwebCache.reload(function() {
-						imdbCache.reload(function() {
-							if (isPirateBay()) {
-								augmentPirateBay();
-							} else {
-								augmentIsoHunt();
-							}
-
-						});
-					});
-				});
-			});
+	afterLoad(function() {
+		if (isPirateBay()) {
+			augmentPirateBay();
+		} else {
+			augmentIsoHunt();
 		}
 	});
-
 });
