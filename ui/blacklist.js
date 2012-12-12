@@ -53,7 +53,7 @@ BlacklistGUI.prototype.enableSaveAndDiscardBtns = function(really) {
 };
 
 BlacklistGUI.prototype.buildBlacklistGUI = function() {
-
+	
 	var that = this;
 	var nTable = $("<table border=1></table>");
 	nTable.append($("<tr></tr>"));
@@ -69,27 +69,36 @@ BlacklistGUI.prototype.buildBlacklistGUI = function() {
 			$("#" + className + "_" + id).hide(500);
 			that.enableSaveAndDiscardBtns(true);
 		});
-
-		var colRemove = $("<td></td>");
-		colRemove.append(resurrectBtn);
+		colMovie.append("<br/>");
+		colMovie.append(resurrectBtn);
 
 		nRow.attr('id', className + "_" + i);
 		nRow.append($("<td>#" + (1 + parseInt(i)) + "</td>"));
 		nRow.append(colMovie);
-		nRow.append(colRemove);
 
 		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
-			var filmwebNode = $("<td>" + getAjaxIcon() + "</td>");
+			var filmwebNode = $("<td id='"+className+"_filmweb_"+i+"'>" + getAjaxIcon() + "</td>");
 			nRow.append(filmwebNode);
-			//TODO: too fast
-			//addFilmwebCell(filmwebNode, cleanedTitle);
 		}
-
+		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+			var imdbNode = $("<td id='"+className+"_imdb_"+i+"'>" + getAjaxIcon() + "</td>");
+			nRow.append(imdbNode);
+		}
 		nTable.append(nRow);
 	}
 
 	$('#' + className + "_list").empty().append(nTable).append("Approx total days (24h) ~ " + (1.5 * this.myBL.mblacklist.movies.length)/24.0);
-
+	
+	for ( var i in this.myBL.mblacklist.movies) {
+		var cleanedTitle = this.myBL.mblacklist.movies[i];
+		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+			addFilmwebCell($('#'+className+'_filmweb_'+i), cleanedTitle);
+		}
+		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+			addIMDBCell($('#'+className+'_imdb_'+i), cleanedTitle);
+		}
+	}
+	
 	this.enableSaveAndDiscardBtns(false);
 };
 
