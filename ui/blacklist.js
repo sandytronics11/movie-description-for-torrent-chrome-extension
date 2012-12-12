@@ -53,9 +53,12 @@ BlacklistGUI.prototype.enableSaveAndDiscardBtns = function(really) {
 };
 
 BlacklistGUI.prototype.buildBlacklistGUI = function() {
+
+	myOPT.opts.IMDB.Mark_movies_with_rating_greater_or_equal_than = "10";
+	myOPT.opts.FilmWeb.Mark_movies_with_rating_greater_or_equal_than = "10";
 	
 	var that = this;
-	var nTable = $("<table border=1></table>");
+	var nTable = $("<table></table>");
 	nTable.append($("<tr></tr>"));
 	var className = this.myBL.name;
 	for ( var i in this.myBL.mblacklist.movies) {
@@ -77,28 +80,32 @@ BlacklistGUI.prototype.buildBlacklistGUI = function() {
 		nRow.append(colMovie);
 
 		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
-			var filmwebNode = $("<td id='"+className+"_filmweb_"+i+"'>" + getAjaxIcon() + "</td>");
+			var filmwebNode = $("<td id='" + className + "_filmweb_" + i + "'>"
+					+ getAjaxIcon() + "</td>");
 			nRow.append(filmwebNode);
 		}
 		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
-			var imdbNode = $("<td id='"+className+"_imdb_"+i+"'>" + getAjaxIcon() + "</td>");
+			var imdbNode = $("<td id='" + className + "_imdb_" + i + "'>"
+					+ getAjaxIcon() + "</td>");
 			nRow.append(imdbNode);
 		}
 		nTable.append(nRow);
 	}
 
-	$('#' + className + "_list").empty().append(nTable).append("Approx total days (24h) ~ " + (1.5 * this.myBL.mblacklist.movies.length)/24.0);
-	
+	$('#' + className + "_list").empty().append(nTable).append(
+			"Approx total days (24h) ~ "
+					+ (1.5 * this.myBL.mblacklist.movies.length) / 24.0);
+
 	for ( var i in this.myBL.mblacklist.movies) {
 		var cleanedTitle = this.myBL.mblacklist.movies[i];
 		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
-			addFilmwebCell($('#'+className+'_filmweb_'+i), cleanedTitle);
+			addFilmwebCell($('#' + className + '_filmweb_' + i), cleanedTitle);
 		}
 		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
-			addIMDBCell($('#'+className+'_imdb_'+i), cleanedTitle);
+			addIMDBCell($('#' + className + '_imdb_' + i), cleanedTitle);
 		}
 	}
-	
+
 	this.enableSaveAndDiscardBtns(false);
 };
 
