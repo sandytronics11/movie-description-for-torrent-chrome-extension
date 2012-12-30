@@ -1,11 +1,5 @@
 "use strict";
 
-var DELIMITER = "ISOHUNTTHEDELIMITERTHE";
-
-function removeDelimiter(str) {
-	return str.replace(new RegExp(DELIMITER, "gi"), "");
-}
-
 function getOriginalMovieTitle(htmlNode) {
 	var res = "";
 

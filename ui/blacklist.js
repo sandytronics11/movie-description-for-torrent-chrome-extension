@@ -56,7 +56,7 @@ BlacklistGUI.prototype.buildBlacklistGUI = function() {
 
 	myOPT.opts.IMDB.Mark_movies_with_rating_greater_or_equal_than = "10";
 	myOPT.opts.FilmWeb.Mark_movies_with_rating_greater_or_equal_than = "10";
-	
+
 	var that = this;
 	var nTable = $("<table></table>");
 	nTable.append($("<tr></tr>"));
@@ -72,37 +72,42 @@ BlacklistGUI.prototype.buildBlacklistGUI = function() {
 			$("#" + className + "_" + id).hide(500);
 			that.enableSaveAndDiscardBtns(true);
 		});
-		colMovie.append("<br/>");
-		colMovie.append(resurrectBtn);
+		if (myOPT.opts.Blacklist.Display_movie_descryption) {
+			colMovie.append("<br/>");
+			colMovie.append(resurrectBtn);
+		}
 
 		nRow.attr('id', className + "_" + i);
 		nRow.append($("<td>#" + (1 + parseInt(i)) + "</td>"));
 		nRow.append(colMovie);
 
-		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
-			var filmwebNode = $("<td id='" + className + "_filmweb_" + i + "'>"
-					+ getAjaxIcon() + "</td>");
-			nRow.append(filmwebNode);
-		}
-		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
-			var imdbNode = $("<td id='" + className + "_imdb_" + i + "'>"
-					+ getAjaxIcon() + "</td>");
-			nRow.append(imdbNode);
+		if (myOPT.opts.Blacklist.Display_movie_descryption) {
+			if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+				var filmwebNode = $("<td id='" + className + "_filmweb_" + i + "'>" + getAjaxIcon() + "</td>");
+				nRow.append(filmwebNode);
+			}
+			if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+				var imdbNode = $("<td id='" + className + "_imdb_" + i + "'>" + getAjaxIcon() + "</td>");
+				nRow.append(imdbNode);
+			}
+		}else{
+			nRow.append(resurrectBtn);
 		}
 		nTable.append(nRow);
 	}
 
 	$('#' + className + "_list").empty().append(nTable).append(
-			"Approx total days (24h) ~ "
-					+ (1.5 * this.myBL.mblacklist.movies.length) / 24.0);
+			"Approx total days (24h) ~ " + (1.5 * this.myBL.mblacklist.movies.length) / 24.0);
 
-	for ( var i in this.myBL.mblacklist.movies) {
-		var cleanedTitle = this.myBL.mblacklist.movies[i];
-		if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
-			addFilmwebCell($('#' + className + '_filmweb_' + i), cleanedTitle);
-		}
-		if (myOPT.opts.IMDB.Integrate_with_IMDB) {
-			addIMDBCell($('#' + className + '_imdb_' + i), cleanedTitle);
+	if (myOPT.opts.Blacklist.Display_movie_descryption) {
+		for ( var i in this.myBL.mblacklist.movies) {
+			var cleanedTitle = this.myBL.mblacklist.movies[i];
+			if (myOPT.opts.FilmWeb.Integrate_with_FilmWeb) {
+				addFilmwebCell($('#' + className + '_filmweb_' + i), cleanedTitle);
+			}
+			if (myOPT.opts.IMDB.Integrate_with_IMDB) {
+				addIMDBCell($('#' + className + '_imdb_' + i), cleanedTitle);
+			}
 		}
 	}
 

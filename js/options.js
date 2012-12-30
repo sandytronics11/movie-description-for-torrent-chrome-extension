@@ -52,6 +52,9 @@ Options.prototype.getDefault = function() {
 			Add_hide_movie_link : true,
 			Use_torrent_title_as_query_param : false,
 			Use_movie_title_as_query_param : true
+		},
+		Blacklist : {
+			Display_movie_descryption : true,
 		}
 	};
 };
